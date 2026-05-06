@@ -92,6 +92,7 @@ type
     procedure CamposObrigatorios;
     function CampoValido(const S: string): Boolean;
     function RegistroValido(Bloco: TStringList): Boolean;
+    function IsHeader(const S: string): Boolean;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -109,7 +110,8 @@ implementation
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
 begin
-   ControlarIndiceTab(PageControl1,1);
+  ControlarIndiceTab(PageControl1,1);
+  edtIdFilme.SetFocus;
   FEstadoDoCadastro:= ecAlterar;
   if oFilme.Seleciona(QryCatalogo.FieldByName('idFilme').AsInteger) then begin
      edtIdFilme.Text:=IntToStr(oFilme.idFilme);
@@ -220,7 +222,7 @@ var
   ler, bloco: TStringList;
   i, Inseridos: Integer;
   Linha: string;
-  Sep: Char;
+  PrimeiraLinha: Boolean;
 begin
   ler := TStringList.Create;
   bloco := TStringList.Create;
@@ -232,6 +234,8 @@ begin
 
     ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
 
+    PrimeiraLinha := True;
+
     for i := 0 to Pred(ler.Count) do
     begin
       Linha := Trim(ler[i]);
@@ -239,28 +243,39 @@ begin
       if Linha = '' then
         Continue;
 
-      // ignora marcador
-      if (Pos('[', Linha) > 0) and (Pos(']', Linha) > 0) then
+      // ✔ IGNORA SEMPRE A PRIMEIRA LINHA (HEADER)
+      if PrimeiraLinha then
+      begin
+        PrimeiraLinha := False;
         Continue;
+      end;
 
+      // =========================
+      // DELIMITADO
+      // =========================
       if (Pos('|', Linha) > 0) or
          (Pos(';', Linha) > 0) or
          (Pos(',', Linha) > 0) then
       begin
-        if Pos('|', Linha) > 0 then Sep := '|'
-        else if Pos(';', Linha) > 0 then Sep := ';'
-        else Sep := ',';
+        if Pos('|', Linha) > 0 then
+          bloco.Delimiter := '|'
+        else if Pos(';', Linha) > 0 then
+          bloco.Delimiter := ';'
+        else
+          bloco.Delimiter := ',';
 
-        bloco.Delimiter := Sep;
         bloco.StrictDelimiter := True;
         bloco.DelimitedText := Linha;
 
-        if not RegistroValido(bloco) then
-        begin
-          ShowMessage('Registro inválido (campos obrigatórios vazios).');
-          bloco.Clear;
+        if bloco.Count <> 5 then
           Continue;
-        end;
+
+        if (Trim(bloco[0]) = '') or
+           (Trim(bloco[1]) = '') or
+           (Trim(bloco[2]) = '') or
+           (Trim(bloco[3]) = '') or
+           (Trim(bloco[4]) = '') then
+          Continue;
 
         if not ExisteFilme(bloco[0], bloco[1]) then
         begin
@@ -280,36 +295,38 @@ begin
           end;
         end;
 
-        bloco.Clear;
         Continue;
       end;
 
+      // =========================
+      // BLOCO
+      // =========================
       bloco.Add(Linha);
 
       if bloco.Count = 5 then
       begin
-        if not RegistroValido(bloco) then
+        if (Trim(bloco[0]) <> '') and
+           (Trim(bloco[1]) <> '') and
+           (Trim(bloco[2]) <> '') and
+           (Trim(bloco[3]) <> '') and
+           (Trim(bloco[4]) <> '') then
         begin
-          ShowMessage('Registro em bloco inválido.');
-          bloco.Clear;
-          Continue;
-        end;
+          if not ExisteFilme(bloco[0], bloco[1]) then
+          begin
+            QryCatalogo.Append;
+            try
+              QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+              QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+              QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+              QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+              QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
+              QryCatalogo.Post;
 
-        if not ExisteFilme(bloco[0], bloco[1]) then
-        begin
-          QryCatalogo.Append;
-          try
-            QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
-            QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
-            QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
-            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
-            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
-            QryCatalogo.Post;
-
-            Inc(Inseridos);
-          except
-            QryCatalogo.Cancel;
-            raise;
+              Inc(Inseridos);
+            except
+              QryCatalogo.Cancel;
+              raise;
+            end;
           end;
         end;
 
@@ -354,7 +371,6 @@ procedure TfrmCadFilme.btnNovoClick(Sender: TObject);
 begin
   FEstadoDoCadastro:= ecInserir;
   ControlarIndiceTab(PageControl1, 1);
-  edtTitulo.SetFocus;
   limparComponenteitem;
 end;
 
@@ -683,4 +699,14 @@ begin
 end;
 
 
+
+function TfrmCadFilme.IsHeader(const S: string): Boolean;
+begin
+  Result :=
+    (Pos('titulo', LowerCase(S)) > 0) or
+    (Pos('diretor', LowerCase(S)) > 0) or
+    (Pos('genero', LowerCase(S)) > 0) or
+    (Pos('sinopse', LowerCase(S)) > 0) or
+    (Pos('anolancamento', LowerCase(S)) > 0);
+end;
 end.

@@ -92,7 +92,8 @@ type
     procedure CamposObrigatorios;
     function CampoValido(const S: string): Boolean;
     function RegistroValido(Bloco: TStringList): Boolean;
-    function IsHeader(const S: string): Boolean;
+    function Header(Linha: string): Boolean;
+    function Marcador(const Linha: string): Boolean;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -110,7 +111,8 @@ implementation
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
 begin
-   ControlarIndiceTab(PageControl1,1);
+  ControlarIndiceTab(PageControl1,1);
+  btnGravar.SetFocus;
   FEstadoDoCadastro:= ecAlterar;
   if oFilme.Seleciona(QryCatalogo.FieldByName('idFilme').AsInteger) then begin
      edtIdFilme.Text:=IntToStr(oFilme.idFilme);
@@ -221,6 +223,7 @@ var
   ler, bloco: TStringList;
   i, Inseridos: Integer;
   Linha: string;
+  PrimeiraLinha: Boolean;
 begin
   ler := TStringList.Create;
   bloco := TStringList.Create;
@@ -232,6 +235,8 @@ begin
 
     ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
 
+    PrimeiraLinha := True;
+
     for i := 0 to Pred(ler.Count) do
     begin
       Linha := Trim(ler[i]);
@@ -239,7 +244,10 @@ begin
       if Linha = '' then
         Continue;
 
-      if (Pos('[', Linha) > 0) and (Pos(']', Linha) > 0) then
+     if Marcador(Linha) then
+        Continue;
+
+     if Header(Linha) then
         Continue;
 
       if (Pos('|', Linha) > 0) or
@@ -257,20 +265,14 @@ begin
         bloco.DelimitedText := Linha;
 
         if bloco.Count <> 5 then
-        begin
-          ShowMessage('Linha inválida: quantidade de campos incorreta.');
           Continue;
-        end;
 
         if (Trim(bloco[0]) = '') or
            (Trim(bloco[1]) = '') or
            (Trim(bloco[2]) = '') or
            (Trim(bloco[3]) = '') or
            (Trim(bloco[4]) = '') then
-        begin
-          ShowMessage('Campos obrigatórios vazios na linha.');
           Continue;
-        end;
 
         if not ExisteFilme(bloco[0], bloco[1]) then
         begin
@@ -279,8 +281,8 @@ begin
             QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
             QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
             QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
-            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[3]);
-            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[4]);
+            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
             QryCatalogo.Post;
 
             Inc(Inseridos);
@@ -297,32 +299,28 @@ begin
 
       if bloco.Count = 5 then
       begin
-        if (Trim(bloco[0]) = '') or
-           (Trim(bloco[1]) = '') or
-           (Trim(bloco[2]) = '') or
-           (Trim(bloco[3]) = '') or
-           (Trim(bloco[4]) = '') then
+        if (Trim(bloco[0]) <> '') and
+           (Trim(bloco[1]) <> '') and
+           (Trim(bloco[2]) <> '') and
+           (Trim(bloco[3]) <> '') and
+           (Trim(bloco[4]) <> '') then
         begin
-          ShowMessage('Bloco com campos obrigatórios vazios.');
-          bloco.Clear;
-          Continue;
-        end;
+          if not ExisteFilme(bloco[0], bloco[1]) then
+          begin
+            QryCatalogo.Append;
+            try
+              QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+              QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+              QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+              QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+              QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
+              QryCatalogo.Post;
 
-        if not ExisteFilme(bloco[0], bloco[1]) then
-        begin
-          QryCatalogo.Append;
-          try
-            QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
-            QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
-            QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
-            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[3]);
-            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[4]);
-            QryCatalogo.Post;
-
-            Inc(Inseridos);
-          except
-            QryCatalogo.Cancel;
-            raise;
+              Inc(Inseridos);
+            except
+              QryCatalogo.Cancel;
+              raise;
+            end;
           end;
         end;
 
@@ -367,7 +365,6 @@ procedure TfrmCadFilme.btnNovoClick(Sender: TObject);
 begin
   FEstadoDoCadastro:= ecInserir;
   ControlarIndiceTab(PageControl1, 1);
-  edtTitulo.SetFocus;
   limparComponenteitem;
 end;
 
@@ -447,6 +444,7 @@ begin
   mskEdit.SetFocus;
 
 end;
+
 
 function TfrmCadFilme.Excluir: Boolean;
 begin
@@ -528,6 +526,8 @@ begin
    ExibirLabelIndice(IndiceAtual, lblIndice);
 end;
 
+
+
 {$ENDREGION}
 
 procedure TfrmCadFilme.limparComponenteitem;
@@ -579,6 +579,7 @@ begin
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';
+  edtSinopse.Text:='';
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do
@@ -697,13 +698,52 @@ end;
 
 
 
-function TfrmCadFilme.IsHeader(const S: string): Boolean;
+function TfrmCadFilme.Header(Linha: string): Boolean;
+var
+  tmp: TStringList;
 begin
-  Result :=
-    (Pos('titulo', LowerCase(S)) > 0) or
-    (Pos('diretor', LowerCase(S)) > 0) or
-    (Pos('genero', LowerCase(S)) > 0) or
-    (Pos('sinopse', LowerCase(S)) > 0) or
-    (Pos('anolancamento', LowerCase(S)) > 0);
+  Result := False;
+
+  tmp := TStringList.Create;
+  try
+
+    if Pos('|', Linha) > 0 then tmp.Delimiter := '|'
+    else if Pos(';', Linha) > 0 then tmp.Delimiter := ';'
+    else if Pos(',', Linha) > 0 then tmp.Delimiter := ','
+    else Exit(False);
+
+    tmp.StrictDelimiter := True;
+    tmp.DelimitedText := Linha;
+
+    if tmp.Count <> 5 then
+      Exit(True);
+
+    Linha := LowerCase(Linha);
+
+    if (Pos('titulo', Linha) > 0) or
+       (Pos('diretor', Linha) > 0) or
+       (Pos('genero', Linha) > 0) or
+       (Pos('sinopse', Linha) > 0) or
+       (Pos('ano', Linha) > 0) then
+      Result := True;
+
+  finally
+    tmp.Free;
+  end;
 end;
+
+function TfrmCadFilme.Marcador(const Linha: string): Boolean;
+var
+  L: string;
+begin
+  L := Trim(Linha);
+
+  Result :=
+    (L <> '') and
+    (L[1] = '[') and
+    (L[Length(L)] = ']');
+end;
+
+
+
 end.

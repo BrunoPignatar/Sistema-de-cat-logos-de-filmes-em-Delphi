@@ -33,35 +33,16 @@ uses System.IniFiles, System.IOUtils;
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 var
   Ini: TIniFile;
-  Path, Auth: string;
 begin
-  Path := TPath.Combine(ExtractFilePath(ParamStr(0)), 'config.ini');
-
-  if not FileExists(Path) then
-    raise Exception.Create('Arquivo config.ini não encontrado.');
-
-  Ini := TIniFile.Create(Path);
+  Ini := TIniFile.Create(TPath.Combine(ExtractFilePath(ParamStr(0)), 'config.ini'));
   try
-    ConexaoDB.Params.DriverID := 'MSSQL';
-
     ConexaoDB.Params.Values['Server'] := Ini.ReadString('DB','Server','');
     ConexaoDB.Params.Values['Database'] := Ini.ReadString('DB','Database','');
-
-    Auth := Ini.ReadString('DB','Auth','SQL');
-
-    if SameText(Auth, 'Windows') then
-    begin
-      ConexaoDB.Params.Values['OSAuthent'] := 'Yes';
-    end
-    else
-    begin
-      ConexaoDB.Params.Values['User_Name'] := Ini.ReadString('DB','User','');
-      ConexaoDB.Params.Values['Password'] := Ini.ReadString('DB','Password','');
-    end;
+    ConexaoDB.Params.Values['User_Name'] := Ini.ReadString('DB','User','');
+    ConexaoDB.Params.Values['Password'] := Ini.ReadString('DB','Password','');
 
     ConexaoDB.LoginPrompt := False;
     ConexaoDB.Connected := True;
-
   finally
     Ini.Free;
   end;

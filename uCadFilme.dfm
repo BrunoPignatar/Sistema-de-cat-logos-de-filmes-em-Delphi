@@ -21,7 +21,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcPrincipal
+    ActivePage = pgcCadastro
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet

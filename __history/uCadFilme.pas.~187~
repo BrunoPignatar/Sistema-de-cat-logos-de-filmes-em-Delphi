@@ -10,7 +10,6 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils;
 
 type
-  TTipoImportacao = (tiDelimitado, tiBloco, tiMarcador);
   TfrmCadFilme = class(TForm)
     PageControl1: TPageControl;
     pgcPrincipal: TTabSheet;
@@ -91,7 +90,10 @@ type
     procedure ExportarCSV(ADataset: TDataSet);
     function ExisteFilme(const ATitulo, ADiretor: string): Boolean;
     procedure CamposObrigatorios;
-    function DetectarTipoArquivo(Linhas: TStrings): TTipoImportacao;
+    function CampoValido(const S: string): Boolean;
+    function RegistroValido(Bloco: TStringList): Boolean;
+    function EhHeader(Linha: string): Boolean;
+    function EhMarcador(const Linha: string): Boolean;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -109,7 +111,8 @@ implementation
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
 begin
-   ControlarIndiceTab(PageControl1,1);
+  ControlarIndiceTab(PageControl1,1);
+  btnGravar.SetFocus;
   FEstadoDoCadastro:= ecAlterar;
   if oFilme.Seleciona(QryCatalogo.FieldByName('idFilme').AsInteger) then begin
      edtIdFilme.Text:=IntToStr(oFilme.idFilme);
@@ -220,7 +223,7 @@ var
   ler, bloco: TStringList;
   i, Inseridos: Integer;
   Linha: string;
-  Tipo: TTipoImportacao;
+  PrimeiraLinha: Boolean;
 begin
   ler := TStringList.Create;
   bloco := TStringList.Create;
@@ -232,25 +235,97 @@ begin
 
     ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
 
-    Tipo := DetectarTipoArquivo(ler);
+    PrimeiraLinha := True;
 
-    case Tipo of
+    for i := 0 to Pred(ler.Count) do
+    begin
+      Linha := Trim(ler[i]);
 
-      tiDelimitado:
+      if Linha = '' then
+        Continue;
+
+     if EhMarcador(Linha) then
+        Continue;
+
+     if EhHeader(Linha) then
+        Continue;
+
+      if (Pos('|', Linha) > 0) or
+         (Pos(';', Linha) > 0) or
+         (Pos(',', Linha) > 0) then
+      begin
+        if Pos('|', Linha) > 0 then
+          bloco.Delimiter := '|'
+        else if Pos(';', Linha) > 0 then
+          bloco.Delimiter := ';'
+        else
+          bloco.Delimiter := ',';
+
+        bloco.StrictDelimiter := True;
+        bloco.DelimitedText := Linha;
+
+        if bloco.Count <> 5 then
+          Continue;
+
+        if (Trim(bloco[0]) = '') or
+           (Trim(bloco[1]) = '') or
+           (Trim(bloco[2]) = '') or
+           (Trim(bloco[3]) = '') or
+           (Trim(bloco[4]) = '') then
+          Continue;
+
+        if not ExisteFilme(bloco[0], bloco[1]) then
         begin
-          Inseridos := ImportarDelimitado(ler);
+          QryCatalogo.Append;
+          try
+            QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+            QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+            QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
+            QryCatalogo.Post;
+
+            Inc(Inseridos);
+          except
+            QryCatalogo.Cancel;
+            raise;
+          end;
         end;
 
-      tiMarcador:
+        Continue;
+      end;
+
+      bloco.Add(Linha);
+
+      if bloco.Count = 5 then
+      begin
+        if (Trim(bloco[0]) <> '') and
+           (Trim(bloco[1]) <> '') and
+           (Trim(bloco[2]) <> '') and
+           (Trim(bloco[3]) <> '') and
+           (Trim(bloco[4]) <> '') then
         begin
-          Inseridos := ImportarPorMarcador(ler);
+          if not ExisteFilme(bloco[0], bloco[1]) then
+          begin
+            QryCatalogo.Append;
+            try
+              QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+              QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+              QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+              QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+              QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
+              QryCatalogo.Post;
+
+              Inc(Inseridos);
+            except
+              QryCatalogo.Cancel;
+              raise;
+            end;
+          end;
         end;
 
-      tiBloco:
-        begin
-          Inseridos := ImportarPorBloco(ler);
-        end;
-
+        bloco.Clear;
+      end;
     end;
 
     QryCatalogo.Close;
@@ -290,7 +365,6 @@ procedure TfrmCadFilme.btnNovoClick(Sender: TObject);
 begin
   FEstadoDoCadastro:= ecInserir;
   ControlarIndiceTab(PageControl1, 1);
-  edtTitulo.SetFocus;
   limparComponenteitem;
 end;
 
@@ -451,6 +525,8 @@ begin
    ExibirLabelIndice(IndiceAtual, lblIndice);
 end;
 
+
+
 {$ENDREGION}
 
 procedure TfrmCadFilme.limparComponenteitem;
@@ -602,23 +678,70 @@ begin
 end;
 
 
-function TfrmCadFilme.DetectarTipoArquivo(Linhas: TStrings): TTipoImportacao;
-var
-  i: Integer;
+function TfrmCadFilme.RegistroValido(Bloco: TStringList): Boolean;
 begin
-  Result := tiBloco;
+  Result :=
+    (Bloco.Count = 5) and
+    CampoValido(Bloco[0]) and
+    CampoValido(Bloco[1]) and
+    CampoValido(Bloco[2]) and
+    CampoValido(Bloco[3]) and
+    CampoValido(Bloco[4]);
+end;
 
-  for i := 0 to Pred(Linhas.Count) do
-  begin
-    if (Pos('|', Linhas[i]) > 0) or
-       (Pos(';', Linhas[i]) > 0) or
-       (Pos(',', Linhas[i]) > 0) then
-      Exit(tiDelimitado);
+function TfrmCadFilme.CampoValido(const S: string): Boolean;
+begin
+  Result := Trim(S) <> '';
+end;
 
-    if (Pos('[', Linhas[i]) > 0) and (Pos(']', Linhas[i]) > 0) then
-      Exit(tiMarcador);
+
+
+function TfrmCadFilme.EhHeader(Linha: string): Boolean;
+var
+  tmp: TStringList;
+begin
+  Result := False;
+
+  tmp := TStringList.Create;
+  try
+
+    if Pos('|', Linha) > 0 then tmp.Delimiter := '|'
+    else if Pos(';', Linha) > 0 then tmp.Delimiter := ';'
+    else if Pos(',', Linha) > 0 then tmp.Delimiter := ','
+    else Exit(False);
+
+    tmp.StrictDelimiter := True;
+    tmp.DelimitedText := Linha;
+
+    if tmp.Count <> 5 then
+      Exit(True);
+
+    Linha := LowerCase(Linha);
+
+    if (Pos('titulo', Linha) > 0) or
+       (Pos('diretor', Linha) > 0) or
+       (Pos('genero', Linha) > 0) or
+       (Pos('sinopse', Linha) > 0) or
+       (Pos('ano', Linha) > 0) then
+      Result := True;
+
+  finally
+    tmp.Free;
   end;
 end;
+
+function TfrmCadFilme.EhMarcador(const Linha: string): Boolean;
+var
+  L: string;
+begin
+  L := Trim(Linha);
+
+  Result :=
+    (L <> '') and
+    (L[1] = '[') and
+    (L[Length(L)] = ']');
+end;
+
 
 
 end.
