@@ -1,0 +1,14 @@
+program uFilmes;
+
+uses
+  Vcl.Forms,
+  uCadFilme in 'uCadFilme.pas' {frmCadFilme};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmCadFilme, frmCadFilme);
+  Application.Run;
+end.
