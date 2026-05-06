@@ -90,6 +90,9 @@ type
     procedure ExportarCSV(ADataset: TDataSet);
     function ExisteFilme(const ATitulo, ADiretor: string): Boolean;
     procedure CamposObrigatorios;
+    function CampoValido(const S: string): Boolean;
+    function RegistroValido(Bloco: TStringList): Boolean;
+    function IsHeader(const S: string): Boolean;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -215,67 +218,129 @@ end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
-  gravar, ler: TStringList;
+  ler, bloco: TStringList;
   i, Inseridos: Integer;
-  Extensao: string;
+  Linha: string;
 begin
-  gravar := TStringList.Create;
   ler := TStringList.Create;
+  bloco := TStringList.Create;
   Inseridos := 0;
 
   try
     if not OpenDialog1.Execute then
       Exit;
 
-    Extensao := LowerCase(ExtractFileExt(OpenDialog1.FileName));
-
-    if Extensao <> '.txt' then
-    begin
-      ShowMessage('Arquivo selecionado fora do esperado. Esperado: .txt');
-      Exit;
-    end;
-
     ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
 
-    gravar.Delimiter := '|';
-    gravar.StrictDelimiter := True;
-
-    for i := 1 to Pred(ler.Count) do
+    for i := 0 to Pred(ler.Count) do
     begin
-      gravar.DelimitedText := ler.Strings[i];
+      Linha := Trim(ler[i]);
 
-      if gravar.Count < 5 then
+      if Linha = '' then
         Continue;
 
-      if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
+      if (Pos('[', Linha) > 0) and (Pos(']', Linha) > 0) then
         Continue;
 
-      with QryCatalogo do
+      if (Pos('|', Linha) > 0) or
+         (Pos(';', Linha) > 0) or
+         (Pos(',', Linha) > 0) then
       begin
-        Append;
-        FieldByName('titulo').AsString := Trim(gravar[0]);
-        FieldByName('diretor').AsString := Trim(gravar[1]);
-        FieldByName('genero').AsString := Trim(gravar[2]);
-        FieldByName('sinopse').AsString := Trim(gravar[3]);
-        FieldByName('anoLancamento').AsString := Trim(gravar[4]);
-        Post;
+        if Pos('|', Linha) > 0 then
+          bloco.Delimiter := '|'
+        else if Pos(';', Linha) > 0 then
+          bloco.Delimiter := ';'
+        else
+          bloco.Delimiter := ',';
+
+        bloco.StrictDelimiter := True;
+        bloco.DelimitedText := Linha;
+
+        if bloco.Count <> 5 then
+        begin
+          ShowMessage('Linha inválida: quantidade de campos incorreta.');
+          Continue;
+        end;
+
+        if (Trim(bloco[0]) = '') or
+           (Trim(bloco[1]) = '') or
+           (Trim(bloco[2]) = '') or
+           (Trim(bloco[3]) = '') or
+           (Trim(bloco[4]) = '') then
+        begin
+          ShowMessage('Campos obrigatórios vazios na linha.');
+          Continue;
+        end;
+
+        if not ExisteFilme(bloco[0], bloco[1]) then
+        begin
+          QryCatalogo.Append;
+          try
+            QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+            QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+            QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[3]);
+            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[4]);
+            QryCatalogo.Post;
+
+            Inc(Inseridos);
+          except
+            QryCatalogo.Cancel;
+            raise;
+          end;
+        end;
+
+        Continue;
       end;
 
-      Inc(Inseridos);
+      bloco.Add(Linha);
+
+      if bloco.Count = 5 then
+      begin
+        if (Trim(bloco[0]) = '') or
+           (Trim(bloco[1]) = '') or
+           (Trim(bloco[2]) = '') or
+           (Trim(bloco[3]) = '') or
+           (Trim(bloco[4]) = '') then
+        begin
+          ShowMessage('Bloco com campos obrigatórios vazios.');
+          bloco.Clear;
+          Continue;
+        end;
+
+        if not ExisteFilme(bloco[0], bloco[1]) then
+        begin
+          QryCatalogo.Append;
+          try
+            QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+            QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+            QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+            QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[3]);
+            QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[4]);
+            QryCatalogo.Post;
+
+            Inc(Inseridos);
+          except
+            QryCatalogo.Cancel;
+            raise;
+          end;
+        end;
+
+        bloco.Clear;
+      end;
     end;
 
     QryCatalogo.Close;
     QryCatalogo.Open;
 
-    // 🎯 mensagens finais
     if Inseridos > 0 then
       ShowMessage('Importação realizada com sucesso!')
     else
-      ShowMessage('Arquivos idênticos. Nenhum registro foi inserido.');
+      ShowMessage('Nenhum registro importado.');
 
   finally
-    gravar.Free;
     ler.Free;
+    bloco.Free;
   end;
 end;
 
@@ -614,4 +679,31 @@ begin
 end;
 
 
+function TfrmCadFilme.RegistroValido(Bloco: TStringList): Boolean;
+begin
+  Result :=
+    (Bloco.Count = 5) and
+    CampoValido(Bloco[0]) and
+    CampoValido(Bloco[1]) and
+    CampoValido(Bloco[2]) and
+    CampoValido(Bloco[3]) and
+    CampoValido(Bloco[4]);
+end;
+
+function TfrmCadFilme.CampoValido(const S: string): Boolean;
+begin
+  Result := Trim(S) <> '';
+end;
+
+
+
+function TfrmCadFilme.IsHeader(const S: string): Boolean;
+begin
+  Result :=
+    (Pos('titulo', LowerCase(S)) > 0) or
+    (Pos('diretor', LowerCase(S)) > 0) or
+    (Pos('genero', LowerCase(S)) > 0) or
+    (Pos('sinopse', LowerCase(S)) > 0) or
+    (Pos('anolancamento', LowerCase(S)) > 0);
+end;
 end.

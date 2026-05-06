@@ -10,6 +10,7 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils;
 
 type
+  TTipoImportacao = (tiDelimitado, tiBloco, tiMarcador);
   TfrmCadFilme = class(TForm)
     PageControl1: TPageControl;
     pgcPrincipal: TTabSheet;
@@ -90,6 +91,7 @@ type
     procedure ExportarCSV(ADataset: TDataSet);
     function ExisteFilme(const ATitulo, ADiretor: string): Boolean;
     procedure CamposObrigatorios;
+    function DetectarTipoArquivo(Linhas: TStrings): TTipoImportacao;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -215,50 +217,53 @@ end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
-  gravar, ler: TStringList;
-  i: Integer;
+  ler, bloco: TStringList;
+  i, Inseridos: Integer;
+  Linha: string;
+  Tipo: TTipoImportacao;
 begin
-  gravar := TStringList.Create;
   ler := TStringList.Create;
+  bloco := TStringList.Create;
+  Inseridos := 0;
 
   try
-    if OpenDialog1.Execute then
-    begin
-      ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
-    end
-    else Exit;
+    if not OpenDialog1.Execute then
+      Exit;
 
-    gravar.Delimiter := '|';
-    gravar.StrictDelimiter := True;
+    ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
 
-   for i := 1 to Pred(ler.Count) do
-  begin
-   gravar.DelimitedText := ler.Strings[i];
+    Tipo := DetectarTipoArquivo(ler);
 
-  if gravar.Count < 5 then
-    Continue;
+    case Tipo of
 
-  // verifica duplicado (titulo + diretor)
-  if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
-    Continue;
+      tiDelimitado:
+        begin
+          Inseridos := ImportarDelimitado(ler);
+        end;
 
-  with QryCatalogo do
-  begin
-    Append;
-    FieldByName('titulo').AsString := Trim(gravar[0]);
-    FieldByName('diretor').AsString := Trim(gravar[1]);
-    FieldByName('genero').AsString := Trim(gravar[2]);
-    FieldByName('sinopse').AsString := Trim(gravar[3]);
-    FieldByName('anoLancamento').AsString := Trim(gravar[4]);
-    Post;
-  end;
-  end;
-  QryCatalogo.Close;
-  QryCatalogo.Open;
+      tiMarcador:
+        begin
+          Inseridos := ImportarPorMarcador(ler);
+        end;
+
+      tiBloco:
+        begin
+          Inseridos := ImportarPorBloco(ler);
+        end;
+
+    end;
+
+    QryCatalogo.Close;
+    QryCatalogo.Open;
+
+    if Inseridos > 0 then
+      ShowMessage('Importação realizada com sucesso!')
+    else
+      ShowMessage('Nenhum registro importado.');
 
   finally
-    gravar.Free;
     ler.Free;
+    bloco.Free;
   end;
 end;
 
@@ -495,7 +500,8 @@ procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
-  lblIndice.Caption:=QryCatalogo.FieldByName('idFilme');
+  lblIndice.Caption:='Cod. Filme';
+  IndiceAtual:='idFilme';
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do
@@ -592,6 +598,25 @@ begin
     end;
   finally
     Lista.Free;
+  end;
+end;
+
+
+function TfrmCadFilme.DetectarTipoArquivo(Linhas: TStrings): TTipoImportacao;
+var
+  i: Integer;
+begin
+  Result := tiBloco;
+
+  for i := 0 to Pred(Linhas.Count) do
+  begin
+    if (Pos('|', Linhas[i]) > 0) or
+       (Pos(';', Linhas[i]) > 0) or
+       (Pos(',', Linhas[i]) > 0) then
+      Exit(tiDelimitado);
+
+    if (Pos('[', Linhas[i]) > 0) and (Pos(']', Linhas[i]) > 0) then
+      Exit(tiMarcador);
   end;
 end;
 

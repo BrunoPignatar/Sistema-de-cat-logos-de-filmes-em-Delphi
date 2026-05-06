@@ -216,45 +216,78 @@ end;
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
   gravar, ler: TStringList;
-  i: Integer;
+  i, Inseridos: Integer;
+  Linha: string;
+  Extensao: string;
 begin
   gravar := TStringList.Create;
   ler := TStringList.Create;
+  Inseridos := 0;
 
   try
-    if OpenDialog1.Execute then
+    if not OpenDialog1.Execute then
+      Exit;
+
+    Extensao := LowerCase(ExtractFileExt(OpenDialog1.FileName));
+
+    if Extensao <> '.txt' then
     begin
-      ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
-    end
-    else Exit;
+      ShowMessage('Arquivo inválido. Esperado: .txt');
+      Exit;
+    end;
+
+    ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
 
     gravar.Delimiter := '|';
     gravar.StrictDelimiter := True;
 
-   for i := 1 to Pred(ler.Count) do
-  begin
-   gravar.DelimitedText := ler.Strings[i];
+    for i := 0 to Pred(ler.Count) do
+    begin
+      Linha := Trim(ler[i]);
 
-  if gravar.Count < 5 then
-    Continue;
+      if Linha = '' then
+        Continue;
 
-  // verifica duplicado (titulo + diretor)
-  if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
-    Continue;
+      if Pos('|', Linha) = 0 then
+      begin
+        ShowMessage('Formato inválido! Use "|" como separador.');
+        Exit;
+      end;
 
-  with QryCatalogo do
-  begin
-    Append;
-    FieldByName('titulo').AsString := Trim(gravar[0]);
-    FieldByName('diretor').AsString := Trim(gravar[1]);
-    FieldByName('genero').AsString := Trim(gravar[2]);
-    FieldByName('sinopse').AsString := Trim(gravar[3]);
-    FieldByName('anoLancamento').AsString := Trim(gravar[4]);
-    Post;
-  end;
-  end;
-  QryCatalogo.Close;
-  QryCatalogo.Open;
+      gravar.DelimitedText := Linha;
+
+      if (gravar.Count < 5) or (gravar.Count > 5)then
+      begin
+        ShowMessage('Arquivo com estrutura inválida. Verifique as colunas.');
+        Exit;
+      end;
+
+      if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
+        Continue;
+
+      QryCatalogo.Append;
+      try
+        QryCatalogo.FieldByName('titulo').AsString := Trim(gravar[0]);
+        QryCatalogo.FieldByName('diretor').AsString := Trim(gravar[1]);
+        QryCatalogo.FieldByName('genero').AsString := Trim(gravar[2]);
+        QryCatalogo.FieldByName('sinopse').AsString := Trim(gravar[3]);
+        QryCatalogo.FieldByName('anoLancamento').AsString := Trim(gravar[4]);
+        QryCatalogo.Post;
+
+        Inc(Inseridos);
+      except
+        QryCatalogo.Cancel;
+        raise;
+      end;
+    end;
+
+    QryCatalogo.Close;
+    QryCatalogo.Open;
+
+    if Inseridos > 0 then
+      ShowMessage('Importação realizada com sucesso!')
+    else
+      ShowMessage('Nenhum registro importado (duplicados ou arquivo vazio).');
 
   finally
     gravar.Free;
@@ -495,7 +528,8 @@ procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
-  lblIndice.Caption:=QryCatalogo.FieldByName('idFilme').AsString;
+  lblIndice.Caption:='Cod. Filme';
+  IndiceAtual:='idFilme';
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do

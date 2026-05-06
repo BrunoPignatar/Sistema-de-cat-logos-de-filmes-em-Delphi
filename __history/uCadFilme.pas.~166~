@@ -7,8 +7,7 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.ExtCtrls,
   Vcl.StdCtrls, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.Mask,
-  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn,
-   System.IOUtils;
+  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils;
 
 type
   TfrmCadFilme = class(TForm)
@@ -91,6 +90,9 @@ type
     procedure ExportarCSV(ADataset: TDataSet);
     function ExisteFilme(const ATitulo, ADiretor: string): Boolean;
     procedure CamposObrigatorios;
+    function CampoValido(const S: string): Boolean;
+    function RegistroValido(Bloco: TStringList): Boolean;
+    function IsHeader(const S: string): Boolean;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -148,6 +150,7 @@ end;
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
 begin
   QryCSV.Close;
+
   QryCSV.SQL.Text :=
     'SELECT * FROM catalogo ORDER BY ' + IndiceAtual;
   QryCSV.Open;
@@ -215,50 +218,92 @@ end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
-  gravar, ler: TStringList;
-  i: Integer;
+  ler, bloco: TStringList;
+  i, Inseridos: Integer;
+  Linha: string;
 begin
-  gravar := TStringList.Create;
   ler := TStringList.Create;
+  bloco := TStringList.Create;
+  Inseridos := 0;
 
   try
-    if OpenDialog1.Execute then
+    if not OpenDialog1.Execute then
+      Exit;
+
+    ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
+
+    for i := 0 to Pred(ler.Count) do
     begin
-      ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
-    end
-    else Exit;
+      Linha := Trim(ler[i]);
 
-    gravar.Delimiter := '|';
-    gravar.StrictDelimiter := True;
+      if Linha = '' then
+        Continue;
 
-   for i := 1 to Pred(ler.Count) do
-  begin
-   gravar.DelimitedText := ler.Strings[i];
+      // ignora marcador
+      if (Pos('[', Linha) > 0) and (Pos(']', Linha) > 0) then
+        Continue;
 
-  if gravar.Count < 5 then
-    Continue;
+      // =========================
+      // ✔ LINHA DELIMITADA
+      // =========================
+      if (Pos('|', Linha) > 0) or
+         (Pos(';', Linha) > 0) or
+         (Pos(',', Linha) > 0) then
+      begin
+        bloco.Delimiter := '|';
+        bloco.StrictDelimiter := True;
+        bloco.DelimitedText := Linha;
 
-  // verifica duplicado (titulo + diretor)
-  if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
-    Continue;
+        if bloco.Count <> 5 then
+        begin
+          ShowMessage('Linha inválida: quantidade de colunas incorreta.');
+          Continue;
+        end;
 
-  with QryCatalogo do
-  begin
-    Append;
-    FieldByName('titulo').AsString := Trim(gravar[0]);
-    FieldByName('diretor').AsString := Trim(gravar[1]);
-    FieldByName('genero').AsString := Trim(gravar[2]);
-    FieldByName('sinopse').AsString := Trim(gravar[3]);
-    FieldByName('anoLancamento').AsString := Trim(gravar[4]);
-    Post;
-  end;
-  end;
-  QryCatalogo.Close;
-  QryCatalogo.Open;
+        if not RegistroValido(bloco) then
+        begin
+          ShowMessage('Campos obrigatórios vazios.');
+          Continue;
+        end;
+
+        ProcessarRegistro(bloco);
+        bloco.Clear;
+        Continue;
+      end;
+
+      // =========================
+      // ✔ BLOCO OU HEADER
+      // =========================
+      if IsHeader(Linha) then
+      begin
+        bloco.Clear;
+        Continue;
+      end;
+
+      bloco.Add(Linha);
+
+      if bloco.Count = 5 then
+      begin
+        if not RegistroValido(bloco) then
+        begin
+          ShowMessage('Bloco inválido.');
+          bloco.Clear;
+          Continue;
+        end;
+
+        ProcessarRegistro(bloco);
+        bloco.Clear;
+      end;
+    end;
+
+    QryCatalogo.Close;
+    QryCatalogo.Open;
+
+    ShowMessage('Importação finalizada.');
 
   finally
-    gravar.Free;
     ler.Free;
+    bloco.Free;
   end;
 end;
 
@@ -496,6 +541,7 @@ var i: Integer;
 begin
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
+  IndiceAtual:='idFilme';
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do
@@ -578,11 +624,11 @@ begin
 
       if SaveDialog1.Execute then
       begin
-      TFile.WriteAllText(
-      SaveDialog1.FileName,
-      Lista.Text,
-      TEncoding.UTF8
-      );
+         TFile.WriteAllText(
+         SaveDialog1.FileName,
+         Lista.Text,
+         TEncoding.UTF8
+                        );
       end;
     except
       on E: EFCreateError do
@@ -596,4 +642,31 @@ begin
 end;
 
 
+function TfrmCadFilme.RegistroValido(Bloco: TStringList): Boolean;
+begin
+  Result :=
+    (Bloco.Count = 5) and
+    CampoValido(Bloco[0]) and
+    CampoValido(Bloco[1]) and
+    CampoValido(Bloco[2]) and
+    CampoValido(Bloco[3]) and
+    CampoValido(Bloco[4]);
+end;
+
+function TfrmCadFilme.CampoValido(const S: string): Boolean;
+begin
+  Result := Trim(S) <> '';
+end;
+
+
+
+function TfrmCadFilme.IsHeader(const S: string): Boolean;
+begin
+  Result :=
+    (Pos('titulo', LowerCase(S)) > 0) or
+    (Pos('diretor', LowerCase(S)) > 0) or
+    (Pos('genero', LowerCase(S)) > 0) or
+    (Pos('sinopse', LowerCase(S)) > 0) or
+    (Pos('anolancamento', LowerCase(S)) > 0);
+end;
 end.

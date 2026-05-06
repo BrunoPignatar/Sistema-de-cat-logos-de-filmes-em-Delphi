@@ -10,6 +10,7 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils;
 
 type
+  TTipoImportacao = (tiDelimitado, tiBloco, tiMarcador);
   TfrmCadFilme = class(TForm)
     PageControl1: TPageControl;
     pgcPrincipal: TTabSheet;
@@ -90,6 +91,8 @@ type
     procedure ExportarCSV(ADataset: TDataSet);
     function ExisteFilme(const ATitulo, ADiretor: string): Boolean;
     procedure CamposObrigatorios;
+    function DetectarTipoArquivo(Linhas: TStrings): TTipoImportacao;
+    procedure Inserir(Bloco: TStrings);
   public
     { Public declarations }
     IndiceAtual:string;
@@ -215,50 +218,85 @@ end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
-  gravar, ler: TStringList;
+  ler, bloco: TStringList;
   i: Integer;
+  Linha, Sep: Char;
+  Inseridos: Integer;
 begin
-  gravar := TStringList.Create;
   ler := TStringList.Create;
+  bloco := TStringList.Create;
+  Inseridos := 0;
 
   try
-    if OpenDialog1.Execute then
+    if not OpenDialog1.Execute then
+      Exit;
+
+    ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
+
+    for i := 0 to ler.Count - 1 do
     begin
-      ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
-    end
-    else Exit;
+      Linha := Trim(ler[i]);
 
-    gravar.Delimiter := '|';
-    gravar.StrictDelimiter := True;
+      // separador por bloco (linha vazia)
+      if Linha = '' then
+      begin
+        if bloco.Count = 5 then
+        begin
+          if not ExisteFilme(bloco[0], bloco[1]) then
+          begin
+            Inserir(bloco);
+            Inc(Inseridos);
+          end;
+        end;
+        bloco.Clear;
+        Continue;
+      end;
 
-   for i := 1 to Pred(ler.Count) do
-  begin
-   gravar.DelimitedText := ler.Strings[i];
+      // ignorar marcador
+      if (Pos('[', Linha) > 0) and (Pos(']', Linha) > 0) then
+        Continue;
 
-  if gravar.Count < 5 then
-    Continue;
+      // detectar separador
+      if Pos('|', Linha) > 0 then Sep := '|'
+      else if Pos(';', Linha) > 0 then Sep := ';'
+      else if Pos(',', Linha) > 0 then Sep := ','
+      else
+      begin
+        bloco.Add(Linha); // bloco normal
+        Continue;
+      end;
 
-  // verifica duplicado (titulo + diretor)
-  if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
-    Continue;
+      // quebrar linha delimitada
+      bloco.Delimiter := Sep;
+      bloco.StrictDelimiter := True;
+      bloco.DelimitedText := Linha;
 
-  with QryCatalogo do
-  begin
-    Append;
-    FieldByName('titulo').AsString := Trim(gravar[0]);
-    FieldByName('diretor').AsString := Trim(gravar[1]);
-    FieldByName('genero').AsString := Trim(gravar[2]);
-    FieldByName('sinopse').AsString := Trim(gravar[3]);
-    FieldByName('anoLancamento').AsString := Trim(gravar[4]);
-    Post;
-  end;
-  end;
-  QryCatalogo.Close;
-  QryCatalogo.Open;
+      if bloco.Count = 5 then
+      begin
+        if (bloco[0] <> '') and (bloco[1] <> '') then
+        begin
+          if not ExisteFilme(bloco[0], bloco[1]) then
+          begin
+            Inserir(bloco);
+            Inc(Inseridos);
+          end;
+        end;
+      end;
+
+      bloco.Clear;
+    end;
+
+    QryCatalogo.Close;
+    QryCatalogo.Open;
+
+    if Inseridos > 0 then
+      ShowMessage('Importação concluída!')
+    else
+      ShowMessage('Nenhum registro válido importado.');
 
   finally
-    gravar.Free;
     ler.Free;
+    bloco.Free;
   end;
 end;
 
@@ -519,6 +557,11 @@ procedure TfrmCadFilme.ControlarIndiceTab(pgcPrincipal: TPageControl; Indice: In
     pgcPrincipal.TabIndex:=Indice;
   end;
 
+function TfrmCadFilme.DetectarTipoArquivo(Linhas: TStrings): TTipoImportacao;
+begin
+
+end;
+
 procedure TfrmCadFilme.edtLancamentoKeyPress(Sender: TObject; var Key: Char);
 begin
   if not CharInSet(Key, ['0'..'9', #8]) then
@@ -596,5 +639,16 @@ begin
   end;
 end;
 
+
+procedure TfrmCadFilme.Inserir(Bloco: TStrings);
+begin
+  QryCatalogo.Append;
+  QryCatalogo.FieldByName('titulo').AsString := Trim(Bloco[0]);
+  QryCatalogo.FieldByName('diretor').AsString := Trim(Bloco[1]);
+  QryCatalogo.FieldByName('genero').AsString := Trim(Bloco[2]);
+  QryCatalogo.FieldByName('sinopse').AsString := Trim(Bloco[3]);
+  QryCatalogo.FieldByName('anoLancamento').AsString := Trim(Bloco[4]);
+  QryCatalogo.Post;
+end;
 
 end.

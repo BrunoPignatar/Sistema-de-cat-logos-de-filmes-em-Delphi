@@ -24,10 +24,8 @@ object frmCadFilme: TfrmCadFilme
     ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1216
     object pgcPrincipal: TTabSheet
       Caption = 'Consulta'
-      ExplicitWidth = 1208
       object Panel1: TPanel
         Left = 0
         Top = 416
@@ -35,7 +33,6 @@ object frmCadFilme: TfrmCadFilme
         Height = 47
         Align = alBottom
         TabOrder = 0
-        ExplicitWidth = 1208
         object btnNovo: TButton
           Left = 512
           Top = 7
@@ -81,7 +78,6 @@ object frmCadFilme: TfrmCadFilme
         Height = 49
         Align = alTop
         TabOrder = 1
-        ExplicitWidth = 1208
         object lblIndice: TLabel
           Left = 9
           Top = 3
@@ -102,7 +98,7 @@ object frmCadFilme: TfrmCadFilme
           Left = 9
           Top = 19
           Width = 137
-          Height = 25
+          Height = 21
           TabOrder = 1
           Text = ''
           TextHint = 'Fa'#231'a sua Pesquisa'
@@ -153,10 +149,6 @@ object frmCadFilme: TfrmCadFilme
         Height = 367
         Align = alClient
         TabOrder = 2
-        ExplicitLeft = 352
-        ExplicitTop = 136
-        ExplicitWidth = 185
-        ExplicitHeight = 41
         object grdFilmes: TDBGrid
           Left = 1
           Top = 1
@@ -171,6 +163,7 @@ object frmCadFilme: TfrmCadFilme
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           ParentShowHint = False
           ReadOnly = True
@@ -229,9 +222,6 @@ object frmCadFilme: TfrmCadFilme
     object pgcCadastro: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
-      ExplicitLeft = 8
-      ExplicitTop = 28
-      ExplicitWidth = 1208
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -248,7 +238,6 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 1208
       end
       object Panel5: TPanel
         Left = 0
@@ -257,10 +246,6 @@ object frmCadFilme: TfrmCadFilme
         Height = 359
         Align = alClient
         TabOrder = 1
-        ExplicitLeft = 400
-        ExplicitTop = 136
-        ExplicitWidth = 185
-        ExplicitHeight = 41
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -435,7 +420,7 @@ object frmCadFilme: TfrmCadFilme
           Font.Style = []
           Lines.Strings = (
             'edtSinopse')
-          MaxLength = 200
+          MaxLength = 500
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 5
@@ -448,7 +433,6 @@ object frmCadFilme: TfrmCadFilme
         Height = 47
         Align = alBottom
         TabOrder = 2
-        ExplicitWidth = 1208
         object btnGravar: TButton
           Left = 519
           Top = 6
@@ -536,40 +520,34 @@ object frmCadFilme: TfrmCadFilme
     object QryCatalogoidFilme: TFDAutoIncField
       DisplayLabel = 'Cod. Filme'
       FieldName = 'idFilme'
-      Origin = 'idFilme'
       ProviderFlags = [pfInWhere, pfInKey]
       ReadOnly = True
     end
     object QryCatalogotitulo: TStringField
       DisplayLabel = 'T'#237'tulo'
       FieldName = 'titulo'
-      Origin = 'titulo'
       Required = True
       Size = 100
     end
     object QryCatalogodiretor: TStringField
       DisplayLabel = 'Diretor'
       FieldName = 'diretor'
-      Origin = 'diretor'
       Required = True
       Size = 100
     end
     object QryCatalogogenero: TStringField
       DisplayLabel = 'G'#234'nero'
       FieldName = 'genero'
-      Origin = 'genero'
       Size = 50
     end
     object QryCatalogosinopse: TStringField
       DisplayLabel = 'Sinopse'
       FieldName = 'sinopse'
-      Origin = 'sinopse'
       Size = 500
     end
     object QryCatalogoanoLancamento: TStringField
       DisplayLabel = 'AnoLan'#231'amento'
       FieldName = 'anoLancamento'
-      Origin = 'anoLancamento'
       Size = 10
     end
   end

@@ -7,8 +7,7 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.ExtCtrls,
   Vcl.StdCtrls, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.Mask,
-  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn,
-   System.IOUtils;
+  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils;
 
 type
   TfrmCadFilme = class(TForm)
@@ -148,6 +147,7 @@ end;
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
 begin
   QryCSV.Close;
+
   QryCSV.SQL.Text :=
     'SELECT * FROM catalogo ORDER BY ' + IndiceAtual;
   QryCSV.Open;
@@ -215,50 +215,111 @@ end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
-  gravar, ler: TStringList;
-  i: Integer;
+  ler, bloco: TStringList;
+  i, Inseridos: Integer;
+  Linha: string;
+  Sep: Char;
 begin
-  gravar := TStringList.Create;
   ler := TStringList.Create;
+  bloco := TStringList.Create;
+  Inseridos := 0;
 
   try
-    if OpenDialog1.Execute then
+    if not OpenDialog1.Execute then
+      Exit;
+
+    ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
+
+    for i := 0 to Pred(ler.Count) do
     begin
-      ler.LoadFromFile(OpenDialog1.FileName, TEncoding.UTF8);
-    end
-    else Exit;
+      Linha := Trim(ler[i]);
 
-    gravar.Delimiter := '|';
-    gravar.StrictDelimiter := True;
+      if Linha = '' then
+        Continue;
 
-   for i := 1 to Pred(ler.Count) do
-  begin
-   gravar.DelimitedText := ler.Strings[i];
+      if (Pos('[', Linha) > 0) and (Pos(']', Linha) > 0) then
+        Continue;
 
-  if gravar.Count < 5 then
-    Continue;
+      if (Pos('|', Linha) > 0) or
+         (Pos(';', Linha) > 0) or
+         (Pos(',', Linha) > 0) then
+      begin
+        if Pos('|', Linha) > 0 then Sep := '|'
+        else if Pos(';', Linha) > 0 then Sep := ';'
+        else Sep := ',';
 
-  // verifica duplicado (titulo + diretor)
-  if ExisteFilme(Trim(gravar[0]), Trim(gravar[1])) then
-    Continue;
+        bloco.Delimiter := Sep;
+        bloco.StrictDelimiter := True;
+        bloco.DelimitedText := Linha;
 
-  with QryCatalogo do
-  begin
-    Append;
-    FieldByName('titulo').AsString := Trim(gravar[0]);
-    FieldByName('diretor').AsString := Trim(gravar[1]);
-    FieldByName('genero').AsString := Trim(gravar[2]);
-    FieldByName('sinopse').AsString := Trim(gravar[3]);
-    FieldByName('anoLancamento').AsString := Trim(gravar[4]);
-    Post;
-  end;
-  end;
-  QryCatalogo.Close;
-  QryCatalogo.Open;
+        if bloco.Count = 5 then
+        begin
+          if (Trim(bloco[0]) <> '') and (Trim(bloco[1]) <> '') then
+          begin
+            if not ExisteFilme(bloco[0], bloco[1]) then
+            begin
+              QryCatalogo.Append;
+              try
+                QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+                QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+                QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+                QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+                QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
+                QryCatalogo.Post;
+
+                Inc(Inseridos);
+              except
+                QryCatalogo.Cancel;
+                raise;
+              end;
+            end;
+          end;
+        end;
+
+        bloco.Clear;
+        Continue;
+      end;
+
+      bloco.Add(Linha);
+
+      if bloco.Count = 5 then
+      begin
+        if (Trim(bloco[0]) <> '') and (Trim(bloco[1]) <> '') then
+        begin
+          if not ExisteFilme(bloco[0], bloco[1]) then
+          begin
+            QryCatalogo.Append;
+            try
+              QryCatalogo.FieldByName('titulo').AsString := Trim(bloco[0]);
+              QryCatalogo.FieldByName('diretor').AsString := Trim(bloco[1]);
+              QryCatalogo.FieldByName('genero').AsString := Trim(bloco[2]);
+              QryCatalogo.FieldByName('sinopse').AsString := Trim(bloco[3]);
+              QryCatalogo.FieldByName('anoLancamento').AsString := Trim(bloco[4]);
+              QryCatalogo.Post;
+
+              Inc(Inseridos);
+            except
+              QryCatalogo.Cancel;
+              raise;
+            end;
+          end;
+        end;
+
+        bloco.Clear;
+      end;
+    end;
+
+    QryCatalogo.Close;
+    QryCatalogo.Open;
+
+    if Inseridos > 0 then
+      ShowMessage('Importação realizada com sucesso!')
+    else
+      ShowMessage('Nenhum registro importado.');
 
   finally
-    gravar.Free;
     ler.Free;
+    bloco.Free;
   end;
 end;
 
@@ -496,6 +557,7 @@ var i: Integer;
 begin
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
+  IndiceAtual:='idFilme';
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do
@@ -578,11 +640,11 @@ begin
 
       if SaveDialog1.Execute then
       begin
-      TFile.WriteAllText(
-      SaveDialog1.FileName,
-      Lista.Text,
-      TEncoding.UTF8
-      );
+         TFile.WriteAllText(
+         SaveDialog1.FileName,
+         Lista.Text,
+         TEncoding.UTF8
+                        );
       end;
     except
       on E: EFCreateError do

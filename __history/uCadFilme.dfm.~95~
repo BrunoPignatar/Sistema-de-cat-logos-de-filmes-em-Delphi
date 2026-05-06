@@ -188,37 +188,39 @@ object frmCadFilme: TfrmCadFilme
             item
               Expanded = False
               FieldName = 'idFilme'
-              Width = 150
+              Title.Caption = 'Cod.Filme'
+              Width = 100
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'titulo'
-              Width = 150
+              Width = 200
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'diretor'
-              Width = 150
+              Width = 200
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'genero'
-              Width = 150
+              Width = 200
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'sinopse'
-              Width = 150
+              Width = 200
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'anoLancamento'
-              Width = 150
+              Title.Caption = 'Ano de Lan'#231'amento'
+              Width = 200
               Visible = True
             end>
         end
@@ -357,8 +359,8 @@ object frmCadFilme: TfrmCadFilme
           TabOrder = 0
         end
         object edtTitulo: TEdit
-          Left = 678
-          Top = 114
+          Left = 466
+          Top = 117
           Width = 135
           Height = 32
           AutoSelect = False
@@ -370,11 +372,11 @@ object frmCadFilme: TfrmCadFilme
           Font.Style = []
           MaxLength = 100
           ParentFont = False
-          TabOrder = 2
+          TabOrder = 1
         end
         object edtDiretor: TEdit
-          Left = 466
-          Top = 114
+          Left = 676
+          Top = 117
           Width = 137
           Height = 32
           AutoSelect = False
@@ -386,7 +388,7 @@ object frmCadFilme: TfrmCadFilme
           Font.Style = []
           MaxLength = 100
           ParentFont = False
-          TabOrder = 1
+          TabOrder = 2
         end
         object edtGenero: TEdit
           Left = 466
@@ -468,47 +470,10 @@ object frmCadFilme: TfrmCadFilme
       end
     end
   end
-  object QryCatalogo: TFDQuery
-    Connection = DataModule1.ConexaoDB
-    SQL.Strings = (
-      'select * from catalogo')
-    Left = 816
-    Top = 208
-    object QryCatalogoidFilme: TFDAutoIncField
-      FieldName = 'idFilme'
-      Origin = 'idFilme'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
-    end
-    object QryCatalogotitulo: TStringField
-      FieldName = 'titulo'
-      Origin = 'titulo'
-      Size = 100
-    end
-    object QryCatalogodiretor: TStringField
-      FieldName = 'diretor'
-      Origin = 'diretor'
-      Size = 100
-    end
-    object QryCatalogogenero: TStringField
-      FieldName = 'genero'
-      Origin = 'genero'
-      Size = 50
-    end
-    object QryCatalogosinopse: TMemoField
-      FieldName = 'sinopse'
-      BlobType = ftMemo
-    end
-    object QryCatalogoanoLancamento: TStringField
-      FieldName = 'anoLancamento'
-      Origin = 'anoLancamento'
-      Size = 4
-    end
-  end
   object dtsCatalogo: TDataSource
     DataSet = QryCatalogo
-    Left = 1140
-    Top = 241
+    Left = 556
+    Top = 249
   end
   object QryCSV: TFDQuery
     Connection = DataModule1.ConexaoDB
@@ -548,18 +513,64 @@ object frmCadFilme: TfrmCadFilme
     end
   end
   object OpenDialog1: TOpenDialog
-    Left = 700
-    Top = 145
+    Left = 820
+    Top = 89
   end
   object QryVerifica: TFDQuery
     Connection = DataModule1.ConexaoDB
     SQL.Strings = (
       'select * from catalogo')
-    Left = 784
-    Top = 304
+    Left = 912
+    Top = 248
   end
   object SaveDialog1: TSaveDialog
-    Left = 692
-    Top = 217
+    Left = 836
+    Top = 145
+  end
+  object QryCatalogo: TFDQuery
+    Connection = DataModule1.ConexaoDB
+    SQL.Strings = (
+      'select * from catalogo')
+    Left = 536
+    Top = 168
+    object QryCatalogoidFilme: TFDAutoIncField
+      DisplayLabel = 'Cod. Filme'
+      FieldName = 'idFilme'
+      Origin = 'idFilme'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
+    end
+    object QryCatalogotitulo: TStringField
+      DisplayLabel = 'T'#237'tulo'
+      FieldName = 'titulo'
+      Origin = 'titulo'
+      Required = True
+      Size = 100
+    end
+    object QryCatalogodiretor: TStringField
+      DisplayLabel = 'Diretor'
+      FieldName = 'diretor'
+      Origin = 'diretor'
+      Required = True
+      Size = 100
+    end
+    object QryCatalogogenero: TStringField
+      DisplayLabel = 'G'#234'nero'
+      FieldName = 'genero'
+      Origin = 'genero'
+      Size = 50
+    end
+    object QryCatalogosinopse: TStringField
+      DisplayLabel = 'Sinopse'
+      FieldName = 'sinopse'
+      Origin = 'sinopse'
+      Size = 500
+    end
+    object QryCatalogoanoLancamento: TStringField
+      DisplayLabel = 'AnoLan'#231'amento'
+      FieldName = 'anoLancamento'
+      Origin = 'anoLancamento'
+      Size = 10
+    end
   end
 end
