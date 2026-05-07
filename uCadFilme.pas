@@ -79,6 +79,11 @@ type
     procedure btnPesquisarClick(Sender: TObject);
     procedure btnExportarCSVClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
+    procedure edtTituloKeyPress(Sender: TObject; var Key: Char);
+    procedure edtDiretorKeyPress(Sender: TObject; var Key: Char);
+    procedure edtGeneroKeyPress(Sender: TObject; var Key: Char);
+    procedure edtSinopseKeyPress(Sender: TObject; var Key: Char);
+    procedure edtSinopseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -94,6 +99,8 @@ type
     function RegistroValido(Bloco: TStringList): Boolean;
     function Header(Linha: string): Boolean;
     function Marcador(const Linha: string): Boolean;
+    procedure Bloqueiactrl_enter(var Key: Word; Shift: TShiftState);
+    function SemEnter(const S: string): string;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -151,13 +158,7 @@ end;
 
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
 begin
-  QryCSV.Close;
-
-  QryCSV.SQL.Text :=
-    'SELECT * FROM catalogo ORDER BY ' + IndiceAtual;
-  QryCSV.Open;
-  ExportarCSV(QryCSV);
-  QryCSV.Close;
+  ExportarCSV(QryCatalogo);
 end;
 
 procedure TfrmCadFilme.btnFecharClick(Sender: TObject);
@@ -590,7 +591,7 @@ end;
 procedure TfrmCadFilme.FormShow(Sender: TObject);
 begin
   PageControl1.ActivePageIndex := 0;
-
+  mskEdit.SetFocus;
   QryCatalogo.Close;
   QryCatalogo.Open;
   SelectOriginal := QryCatalogo.SQL.Text;
@@ -602,15 +603,52 @@ procedure TfrmCadFilme.ControlarIndiceTab(pgcPrincipal: TPageControl; Indice: In
     pgcPrincipal.TabIndex:=Indice;
   end;
 
+procedure TfrmCadFilme.edtDiretorKeyPress(Sender: TObject; var Key: Char);
+begin
+ if Key = ';' then
+    Key := #0;
+end;
+
+procedure TfrmCadFilme.edtGeneroKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = ';' then
+    Key := #0;
+end;
+
 procedure TfrmCadFilme.edtLancamentoKeyPress(Sender: TObject; var Key: Char);
 begin
   if not CharInSet(Key, ['0'..'9', #8]) then
     Key := #0;
 end;
 
+procedure TfrmCadFilme.edtSinopseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  Bloqueiactrl_enter(Key, Shift);
+end;
+
+procedure TfrmCadFilme.edtSinopseKeyPress(Sender: TObject; var Key: Char);
+begin
+ if (Key = ';') or (Key = #13) then
+    Key := #0;
+end;
+
+procedure TfrmCadFilme.edtTituloKeyPress(Sender: TObject; var Key: Char);
+begin
+ if Key = ';' then
+    Key := #0;
+end;
+
 procedure TfrmCadFilme.BloqueiaCTRL_DEL_DBGrid(var Key: Word; Shift: TShiftState);
 begin
   if (Shift = [ssCtrl]) and (Key = 46) then
+      key:=0;
+
+end;
+
+
+procedure TfrmCadFilme.Bloqueiactrl_enter(var Key: Word; Shift: TShiftState);
+begin
+  if (Shift = [ssCtrl]) and (Key = 13) then
       key:=0;
 end;
 
@@ -631,7 +669,13 @@ function TfrmCadFilme.RetornarCampoTraduzido(Campo:String):String;
   end;
 
 
-
+function TfrmCadFilme.SemEnter(const S: string): string;
+begin
+  Result := StringReplace(S, sLineBreak, ' ', [rfReplaceAll]);
+  Result := StringReplace(Result, #13#10, ' ', [rfReplaceAll]);
+  Result := StringReplace(Result, #13, ' ', [rfReplaceAll]);
+  Result := StringReplace(Result, #10, ' ', [rfReplaceAll]);
+end;
 
 procedure TfrmCadFilme.ExportarCSV(ADataset: TDataSet);
 var
@@ -650,7 +694,7 @@ begin
         ADataset.FieldByName('diretor').AsString + ';' +
         ADataset.FieldByName('genero').AsString + ';' +
         ADataset.FieldByName('anoLancamento').AsString + ';' +
-        ADataset.FieldByName('sinopse').AsString);
+        SemEnter(ADataset.FieldByName('sinopse').AsString));
 
 
       ADataset.Next;

@@ -12,7 +12,6 @@ object frmCadFilme: TfrmCadFilme
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -22,7 +21,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcPrincipal
+    ActivePage = pgcCadastro
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet
@@ -33,7 +32,7 @@ object frmCadFilme: TfrmCadFilme
         Width = 1276
         Height = 47
         Align = alBottom
-        TabOrder = 0
+        TabOrder = 1
         object btnNovo: TButton
           Left = 512
           Top = 7
@@ -78,7 +77,7 @@ object frmCadFilme: TfrmCadFilme
         Width = 1276
         Height = 49
         Align = alTop
-        TabOrder = 1
+        TabOrder = 0
         object lblIndice: TLabel
           Left = 9
           Top = 3
@@ -92,7 +91,7 @@ object frmCadFilme: TfrmCadFilme
           Width = 81
           Height = 27
           Caption = 'PESQUISAR'
-          TabOrder = 0
+          TabOrder = 1
           OnClick = btnPesquisarClick
         end
         object mskEdit: TMaskEdit
@@ -100,7 +99,7 @@ object frmCadFilme: TfrmCadFilme
           Top = 19
           Width = 137
           Height = 21
-          TabOrder = 1
+          TabOrder = 0
           Text = ''
           TextHint = 'Fa'#231'a sua Pesquisa'
           OnChange = mskEditChange
@@ -359,6 +358,7 @@ object frmCadFilme: TfrmCadFilme
           MaxLength = 100
           ParentFont = False
           TabOrder = 1
+          OnKeyPress = edtTituloKeyPress
         end
         object edtDiretor: TEdit
           Left = 676
@@ -375,6 +375,7 @@ object frmCadFilme: TfrmCadFilme
           MaxLength = 100
           ParentFont = False
           TabOrder = 2
+          OnKeyPress = edtDiretorKeyPress
         end
         object edtGenero: TEdit
           Left = 466

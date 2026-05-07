@@ -79,6 +79,10 @@ type
     procedure btnPesquisarClick(Sender: TObject);
     procedure btnExportarCSVClick(Sender: TObject);
     procedure btnImportarClick(Sender: TObject);
+    procedure edtTituloKeyPress(Sender: TObject; var Key: Char);
+    procedure edtDiretorKeyPress(Sender: TObject; var Key: Char);
+    procedure edtGeneroKeyPress(Sender: TObject; var Key: Char);
+    procedure edtSinopseKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -92,7 +96,8 @@ type
     procedure CamposObrigatorios;
     function CampoValido(const S: string): Boolean;
     function RegistroValido(Bloco: TStringList): Boolean;
-    function IsHeader(const S: string): Boolean;
+    function Header(Linha: string): Boolean;
+    function Marcador(const Linha: string): Boolean;
   public
     { Public declarations }
     IndiceAtual:string;
@@ -150,13 +155,7 @@ end;
 
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
 begin
-  QryCSV.Close;
-
-  QryCSV.SQL.Text :=
-    'SELECT * FROM catalogo ORDER BY ' + IndiceAtual;
-  QryCSV.Open;
-  ExportarCSV(QryCSV);
-  QryCSV.Close;
+  ExportarCSV(QryCatalogo);
 end;
 
 procedure TfrmCadFilme.btnFecharClick(Sender: TObject);
@@ -243,16 +242,12 @@ begin
       if Linha = '' then
         Continue;
 
-      // ✔ IGNORA SEMPRE A PRIMEIRA LINHA (HEADER)
-      if PrimeiraLinha then
-      begin
-        PrimeiraLinha := False;
+     if Marcador(Linha) then
         Continue;
-      end;
 
-      // =========================
-      // DELIMITADO
-      // =========================
+     if Header(Linha) then
+        Continue;
+
       if (Pos('|', Linha) > 0) or
          (Pos(';', Linha) > 0) or
          (Pos(',', Linha) > 0) then
@@ -298,9 +293,6 @@ begin
         Continue;
       end;
 
-      // =========================
-      // BLOCO
-      // =========================
       bloco.Add(Linha);
 
       if bloco.Count = 5 then
@@ -451,6 +443,7 @@ begin
 
 end;
 
+
 function TfrmCadFilme.Excluir: Boolean;
 begin
   if oFilme.Seleciona(QryCatalogo.FieldByName('idFilme').AsInteger) then begin
@@ -531,6 +524,8 @@ begin
    ExibirLabelIndice(IndiceAtual, lblIndice);
 end;
 
+
+
 {$ENDREGION}
 
 procedure TfrmCadFilme.limparComponenteitem;
@@ -582,6 +577,7 @@ begin
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';
+  edtSinopse.Text:='';
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do
@@ -592,7 +588,7 @@ end;
 procedure TfrmCadFilme.FormShow(Sender: TObject);
 begin
   PageControl1.ActivePageIndex := 0;
-
+  mskEdit.SetFocus;
   QryCatalogo.Close;
   QryCatalogo.Open;
   SelectOriginal := QryCatalogo.SQL.Text;
@@ -604,9 +600,33 @@ procedure TfrmCadFilme.ControlarIndiceTab(pgcPrincipal: TPageControl; Indice: In
     pgcPrincipal.TabIndex:=Indice;
   end;
 
+procedure TfrmCadFilme.edtDiretorKeyPress(Sender: TObject; var Key: Char);
+begin
+ if Key = ';' then
+    Key := #0;
+end;
+
+procedure TfrmCadFilme.edtGeneroKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = ';' then
+    Key := #0;
+end;
+
 procedure TfrmCadFilme.edtLancamentoKeyPress(Sender: TObject; var Key: Char);
 begin
   if not CharInSet(Key, ['0'..'9', #8]) then
+    Key := #0;
+end;
+
+procedure TfrmCadFilme.edtSinopseKeyPress(Sender: TObject; var Key: Char);
+begin
+ if (Key = ';') or (Key = #13) then
+    Key := #0;
+end;
+
+procedure TfrmCadFilme.edtTituloKeyPress(Sender: TObject; var Key: Char);
+begin
+ if Key = ';' then
     Key := #0;
 end;
 
@@ -700,13 +720,52 @@ end;
 
 
 
-function TfrmCadFilme.IsHeader(const S: string): Boolean;
+function TfrmCadFilme.Header(Linha: string): Boolean;
+var
+  tmp: TStringList;
 begin
-  Result :=
-    (Pos('titulo', LowerCase(S)) > 0) or
-    (Pos('diretor', LowerCase(S)) > 0) or
-    (Pos('genero', LowerCase(S)) > 0) or
-    (Pos('sinopse', LowerCase(S)) > 0) or
-    (Pos('anolancamento', LowerCase(S)) > 0);
+  Result := False;
+
+  tmp := TStringList.Create;
+  try
+
+    if Pos('|', Linha) > 0 then tmp.Delimiter := '|'
+    else if Pos(';', Linha) > 0 then tmp.Delimiter := ';'
+    else if Pos(',', Linha) > 0 then tmp.Delimiter := ','
+    else Exit(False);
+
+    tmp.StrictDelimiter := True;
+    tmp.DelimitedText := Linha;
+
+    if tmp.Count <> 5 then
+      Exit(True);
+
+    Linha := LowerCase(Linha);
+
+    if (Pos('titulo', Linha) > 0) or
+       (Pos('diretor', Linha) > 0) or
+       (Pos('genero', Linha) > 0) or
+       (Pos('sinopse', Linha) > 0) or
+       (Pos('ano', Linha) > 0) then
+      Result := True;
+
+  finally
+    tmp.Free;
+  end;
 end;
+
+function TfrmCadFilme.Marcador(const Linha: string): Boolean;
+var
+  L: string;
+begin
+  L := Trim(Linha);
+
+  Result :=
+    (L <> '') and
+    (L[1] = '[') and
+    (L[Length(L)] = ']');
+end;
+
+
+
 end.

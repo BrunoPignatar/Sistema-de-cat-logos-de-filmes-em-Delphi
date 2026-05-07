@@ -1,6 +1,7 @@
 object frmCadFilme: TfrmCadFilme
   Left = 0
   Top = 0
+  BorderIcons = [biMinimize, biMaximize]
   Caption = 'Cat'#225'logos de Filme'
   ClientHeight = 491
   ClientWidth = 1284
@@ -21,7 +22,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcCadastro
+    ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet
@@ -32,9 +33,9 @@ object frmCadFilme: TfrmCadFilme
         Width = 1276
         Height = 47
         Align = alBottom
-        TabOrder = 0
+        TabOrder = 1
         object btnNovo: TButton
-          Left = 512
+          Left = 445
           Top = 7
           Width = 89
           Height = 35
@@ -43,7 +44,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnNovoClick
         end
         object btnAlterar: TButton
-          Left = 607
+          Left = 540
           Top = 6
           Width = 89
           Height = 35
@@ -52,7 +53,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnAlterarClick
         end
         object btnApagar: TButton
-          Left = 702
+          Left = 635
           Top = 6
           Width = 89
           Height = 35
@@ -77,7 +78,7 @@ object frmCadFilme: TfrmCadFilme
         Width = 1276
         Height = 49
         Align = alTop
-        TabOrder = 1
+        TabOrder = 0
         object lblIndice: TLabel
           Left = 9
           Top = 3
@@ -91,7 +92,7 @@ object frmCadFilme: TfrmCadFilme
           Width = 81
           Height = 27
           Caption = 'PESQUISAR'
-          TabOrder = 0
+          TabOrder = 1
           OnClick = btnPesquisarClick
         end
         object mskEdit: TMaskEdit
@@ -99,7 +100,7 @@ object frmCadFilme: TfrmCadFilme
           Top = 19
           Width = 137
           Height = 21
-          TabOrder = 1
+          TabOrder = 0
           Text = ''
           TextHint = 'Fa'#231'a sua Pesquisa'
           OnChange = mskEditChange
@@ -358,6 +359,7 @@ object frmCadFilme: TfrmCadFilme
           MaxLength = 100
           ParentFont = False
           TabOrder = 1
+          OnKeyPress = edtTituloKeyPress
         end
         object edtDiretor: TEdit
           Left = 676
@@ -374,6 +376,7 @@ object frmCadFilme: TfrmCadFilme
           MaxLength = 100
           ParentFont = False
           TabOrder = 2
+          OnKeyPress = edtDiretorKeyPress
         end
         object edtGenero: TEdit
           Left = 466
@@ -390,6 +393,7 @@ object frmCadFilme: TfrmCadFilme
           MaxLength = 50
           ParentFont = False
           TabOrder = 3
+          OnKeyPress = edtGeneroKeyPress
         end
         object edtLancamento: TEdit
           Left = 676
@@ -424,6 +428,8 @@ object frmCadFilme: TfrmCadFilme
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 5
+          OnKeyDown = edtSinopseKeyDown
+          OnKeyPress = edtSinopseKeyPress
         end
       end
       object Panel6: TPanel
