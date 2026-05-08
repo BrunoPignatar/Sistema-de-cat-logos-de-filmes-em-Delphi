@@ -230,7 +230,7 @@ object frmCadFilme: TfrmCadFilme
         Height = 57
         Align = alTop
         Caption = 'CADASTRO'
-        Color = 14215400
+        Color = clMoneyGreen
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -27
@@ -246,6 +246,8 @@ object frmCadFilme: TfrmCadFilme
         Width = 1276
         Height = 359
         Align = alClient
+        Color = 14215400
+        ParentBackground = False
         TabOrder = 1
         object Label1: TLabel
           Left = 466
@@ -332,6 +334,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 21
           AutoSelect = False
           AutoSize = False
+          Color = 14215400
           Enabled = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -351,6 +354,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
+          Color = 14215400
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -368,6 +372,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
+          Color = 14215400
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -385,6 +390,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
+          Color = 14215400
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -402,6 +408,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
+          Color = 14215400
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -417,6 +424,7 @@ object frmCadFilme: TfrmCadFilme
           Top = 232
           Width = 562
           Height = 121
+          Color = 14215400
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
@@ -428,6 +436,7 @@ object frmCadFilme: TfrmCadFilme
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 5
+          OnKeyDown = edtSinopseKeyDown
           OnKeyPress = edtSinopseKeyPress
         end
       end
@@ -437,6 +446,8 @@ object frmCadFilme: TfrmCadFilme
         Width = 1276
         Height = 47
         Align = alBottom
+        Color = 14215400
+        ParentBackground = False
         TabOrder = 2
         object btnGravar: TButton
           Left = 519

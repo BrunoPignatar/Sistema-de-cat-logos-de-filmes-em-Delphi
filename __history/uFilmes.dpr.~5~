@@ -5,8 +5,7 @@ uses
   uCadFilme in 'uCadFilme.pas' {frmCadFilme},
   uDtmConexao in 'uDtmConexao.pas' {DataModule1: TDataModule},
   cCadFilme in 'Classes\cCadFilme.pas',
-  uEnum in 'Classes\uEnum.pas',
-  uBoasVindas in 'BoasVindas\uBoasVindas.pas' {frmBoasVindas};
+  uEnum in 'Classes\uEnum.pas';
 
 {$R *.res}
 
@@ -14,6 +13,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TDataModule1, DataModule1);
-  Application.CreateForm(TfrmBoasVindas, frmBoasVindas);
+  Application.CreateForm(TfrmCadFilme, frmCadFilme);
   Application.Run;
 end.

@@ -497,15 +497,15 @@ begin
 
   if gdSelected in State then
   begin
-    grdFilmes.Canvas.Brush.Color := $00D8A76F;
+    grdFilmes.Canvas.Brush.Color := $C8D6C0;      //linhas selecionada
     grdFilmes.Canvas.Font.Color := clwhite;
   end
   else
   begin
     if (Linha mod 2) = 0 then
-      grdFilmes.Canvas.Brush.Color := clWebLightgrey
+      grdFilmes.Canvas.Brush.Color :=   $FAFAF7
     else
-      grdFilmes.Canvas.Brush.Color := $00FFFFFF;
+      grdFilmes.Canvas.Brush.Color := $EEF1EA;     //linha de cima
 
     grdFilmes.Canvas.Font.Color := clBlack;
   end;
@@ -581,6 +581,7 @@ begin
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';
   edtSinopse.Text:='';
+
 
   // Centraliza os titulos
   for i := 0 to grdFilmes.Columns.Count - 1 do

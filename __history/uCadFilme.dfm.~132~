@@ -1,6 +1,7 @@
 object frmCadFilme: TfrmCadFilme
   Left = 0
   Top = 0
+  BorderIcons = [biMinimize, biMaximize]
   Caption = 'Cat'#225'logos de Filme'
   ClientHeight = 491
   ClientWidth = 1284
@@ -21,7 +22,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcCadastro
+    ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet
@@ -34,7 +35,7 @@ object frmCadFilme: TfrmCadFilme
         Align = alBottom
         TabOrder = 1
         object btnNovo: TButton
-          Left = 512
+          Left = 445
           Top = 7
           Width = 89
           Height = 35
@@ -43,7 +44,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnNovoClick
         end
         object btnAlterar: TButton
-          Left = 607
+          Left = 540
           Top = 6
           Width = 89
           Height = 35
@@ -52,7 +53,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnAlterarClick
         end
         object btnApagar: TButton
-          Left = 702
+          Left = 635
           Top = 6
           Width = 89
           Height = 35
@@ -427,6 +428,8 @@ object frmCadFilme: TfrmCadFilme
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 5
+          OnKeyDown = edtSinopseKeyDown
+          OnKeyPress = edtSinopseKeyPress
         end
       end
       object Panel6: TPanel

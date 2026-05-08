@@ -1,0 +1,220 @@
+object frmBoasVindas: TfrmBoasVindas
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'CineTrack - Bem-vindo'
+  ClientHeight = 655
+  ClientWidth = 1184
+  Color = 526344
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDefault
+  WindowState = wsMaximized
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnPaint = FormPaint
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlFundo: TPanel
+    Left = 0
+    Top = 0
+    Width = 1184
+    Height = 655
+    Align = alClient
+    BevelOuter = bvNone
+    Color = 526344
+    ParentBackground = False
+    TabOrder = 0
+    ExplicitWidth = 1280
+    ExplicitHeight = 720
+    object pnlCentro: TPanel
+      Left = 360
+      Top = 150
+      Width = 560
+      Height = 420
+      BevelOuter = bvNone
+      Color = 921110
+      ParentBackground = False
+      TabOrder = 0
+      object lblCine: TLabel
+        Left = 80
+        Top = 80
+        Width = 109
+        Height = 65
+        Caption = 'CINE'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -48
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object lblTrack: TLabel
+        Left = 200
+        Top = 80
+        Width = 153
+        Height = 65
+        Caption = 'TRACK'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 13381072
+        Font.Height = -48
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object lblSubtitulo: TLabel
+        Left = 80
+        Top = 155
+        Width = 126
+        Height = 17
+        Caption = 'CAT'#193'LOGO DE FILMES'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 7895160
+        Font.Height = -13
+        Font.Name = 'Segoe UI Light'
+        Font.Style = []
+        ParentFont = False
+        Transparent = True
+      end
+      object lblDescricao: TLabel
+        Left = 80
+        Top = 215
+        Width = 169
+        Height = 30
+        Caption = 'Organize, descubra e gerencie'#13#10'sua cole'#231#227'o completa de filmes.'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 6316128
+        Font.Height = -12
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
+        Transparent = True
+      end
+      object lblVersao: TLabel
+        Left = 80
+        Top = 370
+        Width = 91
+        Height = 13
+        Caption = 'v1.0  '#183'  Delphi VCL'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 3684408
+        Font.Height = -11
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
+        Transparent = True
+      end
+      object lblIconeFilme: TLabel
+        Left = 380
+        Top = 100
+        Width = 18
+        Height = 48
+        Caption = #62380
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 13381072
+        Font.Height = -36
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
+        Transparent = True
+      end
+      object shpLinhaEsq: TShape
+        Left = 80
+        Top = 185
+        Width = 40
+        Height = 2
+        Brush.Color = 13381072
+        Pen.Color = 13381072
+        Pen.Width = 2
+      end
+      object shpLinhaDireita: TShape
+        Left = 130
+        Top = 185
+        Width = 260
+        Height = 1
+        Brush.Color = 3618872
+        Pen.Color = 3618872
+      end
+      object btnAcessar: TButton
+        Left = 80
+        Top = 287
+        Width = 220
+        Height = 46
+        Cursor = crHandPoint
+        Caption = 'ACESSAR CAT'#193'LOGO'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 0
+        OnClick = btnAcessarClick
+        OnMouseEnter = btnAcessarMouseEnter
+        OnMouseLeave = btnAcessarMouseLeave
+      end
+      object btnFechar: TButton
+        Left = 80
+        Top = 339
+        Width = 129
+        Height = 33
+        Cursor = crHandPoint
+        Cancel = True
+        Caption = 'FECHAR'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 1
+        OnMouseEnter = btnAcessarMouseEnter
+        OnMouseLeave = btnAcessarMouseLeave
+      end
+    end
+    object pnlTopo: TPanel
+      Left = 0
+      Top = 0
+      Width = 1184
+      Height = 50
+      Align = alTop
+      BevelOuter = bvNone
+      Color = 855310
+      ParentBackground = False
+      TabOrder = 1
+      ExplicitWidth = 1280
+    end
+    object pnlBotao: TPanel
+      Left = 0
+      Top = 605
+      Width = 1184
+      Height = 50
+      Align = alBottom
+      BevelOuter = bvNone
+      Color = 855310
+      ParentBackground = False
+      TabOrder = 2
+      ExplicitTop = 670
+      ExplicitWidth = 1280
+    end
+  end
+  object tmrAnimar: TTimer
+    Interval = 20
+    OnTimer = tmrAnimarTimer
+    Left = 20
+    Top = 20
+  end
+  object tmrPulsar: TTimer
+    Interval = 50
+    OnTimer = tmrPulsarTimer
+    Left = 60
+    Top = 20
+  end
+end
