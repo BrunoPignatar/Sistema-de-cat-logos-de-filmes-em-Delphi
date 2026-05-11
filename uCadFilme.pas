@@ -210,11 +210,11 @@ begin
   else
     oFilme.idFilme := 0;
 
-  oFilme.titulo := edtTitulo.Text;
-  oFilme.diretor := edtDiretor.Text;
-  oFilme.genero := edtGenero.Text;
-  oFilme.sinopse := edtSinopse.Text;
-  oFilme.anoLancamento := edtLancamento.Text;
+  oFilme.titulo := Trim(edtTitulo.Text);
+  oFilme.diretor := Trim(edtDiretor.Text);
+  oFilme.genero := Trim(edtGenero.Text);
+  oFilme.sinopse := Trim(edtSinopse.Text);
+  oFilme.anoLancamento := Trim(edtLancamento.Text);
 
   if FEstadoDoCadastro = ecInserir then
     oFilme.Gravar
