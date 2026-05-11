@@ -160,7 +160,7 @@ object frmBoasVindas: TfrmBoasVindas
       end
       object btnFechar: TButton
         Left = 130
-        Top = 348
+        Top = 341
         Width = 97
         Height = 20
         Cursor = crHandPoint

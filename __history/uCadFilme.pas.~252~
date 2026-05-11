@@ -62,7 +62,9 @@ type
     QryCatalogogenero: TStringField;
     QryCatalogosinopse: TStringField;
     QryCatalogoanoLancamento: TStringField;
-    Image1: TImage;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnAlterarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
@@ -85,6 +87,7 @@ type
     procedure edtGeneroKeyPress(Sender: TObject; var Key: Char);
     procedure edtSinopseKeyPress(Sender: TObject; var Key: Char);
     procedure edtSinopseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure edtLancamentoExit(Sender: TObject);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -218,6 +221,10 @@ begin
   QryCatalogo.Open;
 
   ControlarIndiceTab(PageControl1, 0);
+
+  if Length(edtLancamento.Text) < 4 then begin
+        ShowMessage('Precisa inserir um ano válido ' + sLineBreak + 'Exemplo: 2026');
+  end;
 end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
@@ -575,9 +582,11 @@ begin
      QryCatalogo.Locate(IndiceAtual, TMaskEdit(Sender).Text, [])
 end;
 
+
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+  uDtmConexao.DataModule1.CriarTabela;
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';
@@ -592,6 +601,7 @@ end;
 
 procedure TfrmCadFilme.FormShow(Sender: TObject);
 begin
+  lblIndice.Caption:= 'Cod.Filme';
   PageControl1.ActivePageIndex := 0;
   mskEdit.SetFocus;
   QryCatalogo.Close;
@@ -615,6 +625,13 @@ procedure TfrmCadFilme.edtGeneroKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = ';' then
     Key := #0;
+end;
+
+procedure TfrmCadFilme.edtLancamentoExit(Sender: TObject);
+begin
+  if Length(edtLancamento.Text) < 4 then begin
+        ShowMessage('Precisa inserir um ano válido ' + sLineBreak + 'Exemplo: 2026');
+  end;
 end;
 
 procedure TfrmCadFilme.edtLancamentoKeyPress(Sender: TObject; var Key: Char);

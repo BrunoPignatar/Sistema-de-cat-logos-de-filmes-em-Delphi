@@ -480,6 +480,7 @@ object frmCadFilme: TfrmCadFilme
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 4
+          OnExit = edtLancamentoExit
           OnKeyPress = edtLancamentoKeyPress
         end
         object edtSinopse: TMemo
