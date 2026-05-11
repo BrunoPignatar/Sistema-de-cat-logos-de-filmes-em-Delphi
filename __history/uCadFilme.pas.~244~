@@ -87,6 +87,7 @@ type
     procedure edtGeneroKeyPress(Sender: TObject; var Key: Char);
     procedure edtSinopseKeyPress(Sender: TObject; var Key: Char);
     procedure edtSinopseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure PaintBox1Paint(Sender: TObject);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -581,7 +582,7 @@ end;
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
-  uDtmConexao.DataModule1.CriarTabela;
+  Panel4.Color:= RGB(144, 238, 144);
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';

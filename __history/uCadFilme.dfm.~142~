@@ -2,6 +2,7 @@ object frmCadFilme: TfrmCadFilme
   Left = 0
   Top = 0
   BorderIcons = [biMinimize, biMaximize]
+  Caption = 'Cat'#225'logos de Filme'
   ClientHeight = 491
   ClientWidth = 1284
   Color = clBtnFace
@@ -21,7 +22,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcCadastro
+    ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet
@@ -250,20 +251,6 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitTop = 3
-        object Label9: TLabel
-          Left = 714
-          Top = 4
-          Width = 45
-          Height = 45
-          Caption = #55356#57246#65039
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -37
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
       end
       object Panel5: TPanel
         Left = 0
@@ -274,7 +261,6 @@ object frmCadFilme: TfrmCadFilme
         Color = 14215400
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = 3
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -349,32 +335,6 @@ object frmCadFilme: TfrmCadFilme
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -15
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label7: TLabel
-          Left = 280
-          Top = 227
-          Width = 115
-          Height = 116
-          Caption = #55356#57260
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -96
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label8: TLabel
-          Left = 977
-          Top = 227
-          Width = 115
-          Height = 116
-          Caption = #55357#56573#65039
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -96
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False

@@ -1,0 +1,10 @@
+unit cAtualizaTabela;
+
+interface
+
+uses IdUserAccounts, System.Classes, Vcl.Controls, Vcl.ExtCtrls,
+  FireDAC.Comp.Client, Vcl.Dialogs, System.SysUtils, uEnum;
+
+implementation
+
+end.

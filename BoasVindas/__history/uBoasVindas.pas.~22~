@@ -53,11 +53,10 @@ implementation
 {$R *.dfm}
 
 uses
-  uCadFilme, uDtmConexao;
+  uCadFilme;
 
 procedure TfrmBoasVindas.FormCreate(Sender: TObject);
 begin
-  uDtmConexao.DataModule1.CriarBanco;
   // Configurações da janela
   Self.BorderStyle := bsNone;
   Self.WindowState := wsMaximized;

@@ -1,0 +1,75 @@
+unit cAtualizaTabela;
+
+interface
+
+uses IdUserAccounts, System.Classes, Vcl.Controls, Vcl.ExtCtrls,
+  FireDAC.Comp.Client, Vcl.Dialogs, System.SysUtils, uEnum, cAtualizacaoBancoDeDados, uDtmConexao;
+
+
+type
+  TAtualizaTabela = class(TAtualizaBancoDados)
+    private
+      function TabelaExiste(aNomeTabela:string):Boolean;
+    procedure catalogo;
+    protected
+
+    public
+      constructor Create(aConexao:TFDConnection);
+      destructor Destroy; override;
+  end;
+
+implementation
+
+{ TAtualizaTabela }
+
+constructor TAtualizaTableMSSQL.Create(aConexao: TFDConnection);
+begin
+   ConexaoDB:=aConexao;
+end;
+
+destructor TAtualizaTableMSSQL.Destroy;
+begin
+
+  inherited;
+end;
+
+function TAtualizaTableMSSQL.TabelaExiste(aNomeTabela: string): Boolean;
+var Qry:TFDQuery;
+begin
+  try
+    Result:=False;
+    Qry:=TFDQuery.Create(nil);
+    Qry.Connection:=ConexaoDB;
+    Qry.SQL.Clear;
+    Qry.SQL.Add(' SELECT OBJECT_ID (:NomeTabela) As ID ');
+    Qry.ParamByName('NomeTabela').AsString:=aNomeTabela;
+    Qry.Open;
+
+    if Qry.FieldByName('ID').AsInteger>0 then
+    Result:=True;
+  finally
+    Qry.Close;
+    if Assigned(Qry) then
+        FreeAndNil(Qry);
+  end;
+end;
+
+
+procedure TAtualizaTableMSSQL.AcaoAcesso;
+begin
+  if not TabelaExiste('acaoAcesso') then
+  begin
+    ExecutaDiretoBancoDeDados(
+      'CREATE TABLE acaoAcesso ( '+
+      '	 acaoAcessoId int identity(1,1) not null, '+
+      '	 descricao varchar(100) not null, '+
+      '	 chave varchar(60) not null unique, '+
+      '	 PRIMARY KEY (acaoAcessoId) '+
+      '	) '
+    );
+  end;
+end;
+
+
+
+end.

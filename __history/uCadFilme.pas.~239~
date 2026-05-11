@@ -7,7 +7,7 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.ExtCtrls,
   Vcl.StdCtrls, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.Mask,
-  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils, Vcl.Imaging.pngimage;
+  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils;
 
 type
   TfrmCadFilme = class(TForm)
@@ -62,9 +62,6 @@ type
     QryCatalogogenero: TStringField;
     QryCatalogosinopse: TStringField;
     QryCatalogoanoLancamento: TStringField;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnAlterarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
@@ -577,11 +574,9 @@ begin
      QryCatalogo.Locate(IndiceAtual, TMaskEdit(Sender).Text, [])
 end;
 
-
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
-  uDtmConexao.DataModule1.CriarTabela;
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';

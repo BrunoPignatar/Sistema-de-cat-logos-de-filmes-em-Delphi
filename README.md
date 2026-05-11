@@ -31,7 +31,6 @@
 - [Arquitetura](#-arquitetura)
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação Passo a Passo](#-instalação-passo-a-passo)
-- [Configuração do Banco de Dados](#-configuração-do-banco-de-dados)
 - [Configuração da Conexão](#-configuração-da-conexão-configini)
 - [Como Usar](#-como-usar)
 - [Importar TXT](#-importando-dados-via-txt)
@@ -151,48 +150,16 @@ Por padrão o SQL Server aceita apenas autenticação Windows. Para usar usuári
 
 ---
 
-## 🗄️ Configuração do Banco de Dados
-
-### Passo 4 — Criar o banco e a tabela
-
-Abra o **SSMS**, conecte-se ao servidor, clique em **"Nova Consulta"** e execute o script abaixo (disponível também em `SQL/sqlFilmes.sql`):
-
-```sql
--- Criar o banco de dados
-CREATE DATABASE filmes;
-GO
-
--- Usar o banco criado
-USE filmes;
-GO
-
--- Criar a tabela principal
-CREATE TABLE catalogo (
-    idFilme       INT IDENTITY,
-    titulo        VARCHAR(100),
-    diretor       VARCHAR(100),
-    genero        VARCHAR(50),
-    sinopse       VARCHAR(500),
-    anoLancamento VARCHAR(10),
-    CONSTRAINT pk_filme Primary key(titulo, diretor)
-);
-GO
-```
-
-✅ Após executar, você deve ver a mensagem `Command(s) completed successfully.`
-
----
-
 ## ⚙️ Configuração da Conexão (`config.ini`)
 
-### Passo 5 — Configurar o arquivo de conexão
+### Passo 4 — Configurar o arquivo de conexão
 
 Localize o arquivo `Win32\Debug\config.ini` dentro do projeto e edite com o **Bloco de Notas**:
 
 ```ini
 [DB]
 Server=NOME_DO_SEU_SERVIDOR\INSTANCIA
-Database=filmes
+Database=master
 User=sa
 Password=sua_senha_aqui
 ```
@@ -214,7 +181,7 @@ Auth=Windows
 
 ---
 
-### Passo 6 — Abrir o projeto no Delphi
+### Passo 5 — Abrir o projeto no Delphi
 
 1. Abra o **Delphi RAD Studio**
 2. Vá em **File → Open → Project...**
@@ -223,7 +190,7 @@ Auth=Windows
 
 ---
 
-### Passo 7 — Compilar e executar
+### Passo 6 — Compilar e executar
 
 No Delphi, pressione:
 

@@ -1,0 +1,87 @@
+unit cAtualizacaoBancoDeDados;
+
+interface
+
+
+uses IdUserAccounts, System.Classes, Vcl.Controls, Vcl.ExtCtrls,
+  FireDAC.Comp.Client, Vcl.Dialogs, System.SysUtils, uEnum;
+
+
+
+type
+  TAtualizaBancoDados = class
+
+    private
+
+    public
+     ConexaoDB:TFDConnection;
+      constructor Create (aConexao:TFDConnection);
+      procedure ExecutaDiretoBancoDeDados(aScript: String);
+
+  end;
+
+  type
+    TAtualizaBancoDadosMSSQL = class
+      private
+        ConexaoDB:TFDConnection;
+      public
+        function AtualizaBancoDeDadosMSSQL: Boolean;
+        constructor create(aConexao: TFDConnection);
+    end;
+
+implementation
+
+uses
+  cAtualizaTabela;
+
+{ TAtualizaBancoDados }
+
+constructor TAtualizaBancoDados.Create(aConexao: TFDConnection);
+begin
+  ConexaoDB:=aConexao;
+end;
+
+procedure TAtualizaBancoDados.ExecutaDiretoBancoDeDados(aScript: String);
+var Qry:TFDQuery;
+begin
+   try
+     Qry:=TFDQuery.Create(nil);
+     Qry.Connection:=ConexaoDB;
+     Qry.SQL.Clear;
+     Qry.SQL.Add(aScript);
+     try
+       ConexaoDB.StartTransaction;
+       Qry.ExecSQL;
+       ConexaoDB.Commit;
+     except
+       ConexaoDB.Rollback;
+     end;
+   finally
+     Qry.Close;
+     if Assigned(Qry) then
+        FreeAndNil(Qry);
+   end;
+end;
+
+{ TAtualizaBancoDadosMSSQL }
+
+function TAtualizaBancoDadosMSSQL.AtualizaBancoDeDadosMSSQL: Boolean;
+var oAtualizarDB:TAtualizaBancoDados;
+  oTabela: cAtualizaTabela;
+begin
+  try
+    oAtualizarDB:=TAtualizaBancoDados.Create(ConexaoDB);
+
+    oTabela := cAtualizaTabela.create(ConexaoDB);
+  finally
+    if Assigned(oAtualizarDB) then
+        FreeAndNil(oAtualizarDB);
+  end;
+end;
+
+constructor TAtualizaBancoDadosMSSQL.create(aConexao: TFDConnection);
+begin
+  ConexaoDB:=aConexao;
+end;
+
+end.

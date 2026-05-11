@@ -250,7 +250,6 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitTop = 3
         object Label9: TLabel
           Left = 714
           Top = 4

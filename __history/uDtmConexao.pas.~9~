@@ -12,11 +12,10 @@ type
     ConexaoDB: TFDConnection;
     procedure DataModuleCreate(Sender: TObject);
   private
+    procedure AbrirBanco;
     { Private declarations }
   public
     { Public declarations }
-    procedure CriarTabela;
-    procedure CriarBanco;
   end;
 
 var
@@ -70,39 +69,23 @@ begin
 end;
 
 
-
-procedure TDataModule1.CriarBanco;
-begin
-  ConexaoDB.Connected := False;
-  ConexaoDB.Params.Values['Database'] := 'master';
-  ConexaoDB.Connected := True;
-
-
-  ConexaoDB.ExecSQL(
-    'IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = ''filmes'') ' +
-   ' create database filmes ');
-
-  ConexaoDB.Connected := False;
-  ConexaoDB.Params.Values['Database'] := 'filmes';
-  ConexaoDB.Connected := True;
-end;
-
-procedure TDataModule1.CriarTabela;
+procedure TDataModule1.AbrirBanco;
 begin
   ConexaoDB.Connected := True;
 
   ConexaoDB.ExecSQL(
-    'IF NOT EXISTS (SELECT name FROM sys.tables WHERE name = ''catalogo'') ' +
-   ' create table catalogo(      '      +
-	 ' idFilme int identity,       '      +
-   ' titulo varchar(100),        '      +
-	 ' diretor varchar(100),       '      +
-	 ' genero varchar(50),         '      +
-   ' sinopse varchar(500),       '      +
-	 ' anoLancamento varchar(10)   '      +
-	 ' constraint pk_filme primary key (titulo, diretor) )');
+    'IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = ''catalogo'') ' +
+    'BEGIN ' +
+   ' create table catalogo(  '      +
+	 ' idFilme int identity,    '     +
+   '	titulo varchar(100),     '    +
+	 ' diretor varchar(100),      '   +
+	 ' genero varchar(50),         '  +
+   '	sinopse varchar(500),       ' +
+	 ' anoLancamento varchar(10)     '+
+	 ' constraint pk_filme primary key (titulo, diretor) )'+
+    'END'
+  );
 end;
-
-
 
 end.

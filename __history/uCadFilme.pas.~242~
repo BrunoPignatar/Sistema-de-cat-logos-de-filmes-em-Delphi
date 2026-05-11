@@ -577,11 +577,10 @@ begin
      QryCatalogo.Locate(IndiceAtual, TMaskEdit(Sender).Text, [])
 end;
 
-
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
-  uDtmConexao.DataModule1.CriarTabela;
+  Panel4.Color:= RGB(46,204,113);
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';

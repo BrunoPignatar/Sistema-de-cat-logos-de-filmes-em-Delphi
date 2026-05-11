@@ -241,7 +241,7 @@ object frmCadFilme: TfrmCadFilme
         Height = 57
         Align = alTop
         Caption = 'CADASTRO'
-        Color = clMoneyGreen
+        Color = clGreen
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -27

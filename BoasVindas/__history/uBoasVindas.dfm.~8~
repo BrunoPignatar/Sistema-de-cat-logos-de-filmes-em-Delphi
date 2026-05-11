@@ -30,6 +30,8 @@ object frmBoasVindas: TfrmBoasVindas
     Color = 526344
     ParentBackground = False
     TabOrder = 0
+    ExplicitWidth = 1280
+    ExplicitHeight = 720
     object pnlCentro: TPanel
       Left = 360
       Top = 150
@@ -188,6 +190,7 @@ object frmBoasVindas: TfrmBoasVindas
       Color = 855310
       ParentBackground = False
       TabOrder = 1
+      ExplicitWidth = 1280
     end
     object pnlBotao: TPanel
       Left = 0
@@ -199,6 +202,8 @@ object frmBoasVindas: TfrmBoasVindas
       Color = 855310
       ParentBackground = False
       TabOrder = 2
+      ExplicitTop = 670
+      ExplicitWidth = 1280
     end
   end
   object tmrAnimar: TTimer
