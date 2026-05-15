@@ -172,27 +172,27 @@ end;
 
 procedure TfrmCadFilme.CamposObrigatorios;
 begin
-  if edtTitulo.Text = '' then  begin
+  if Trim(edtTitulo.Text) = '' then  begin
   ShowMessage('Título é um campo obrigatório');
   Abort;
   end;
 
-  if edtDiretor.Text = '' then  begin
+  if Trim(edtDiretor.Text) = '' then  begin
   ShowMessage('Diretor é um campo obrigatório');
   Abort;
   end;
 
-  if edtGenero.Text = '' then  begin
+  if Trim(edtGenero.Text) = '' then  begin
   ShowMessage('Gênero é um campo obrigatório');
   Abort;
   end;
 
-  if edtLancamento.Text = '' then  begin
+  if Trim(edtLancamento.Text) = '' then  begin
   ShowMessage('Ano de Lançamento é um campo obrigatório');
   Abort;
   end;
 
-  if edtSinopse.Text = '' then  begin
+  if Trim(edtSinopse.Text) = '' then  begin
   ShowMessage('Sinopse é um campo obrigatório');
   Abort;
   end;
@@ -201,16 +201,20 @@ end;
 procedure TfrmCadFilme.btnGravarClick(Sender: TObject);
 begin
   CamposObrigatorios;
+  if Length(edtLancamento.Text) < 4 then begin
+        ShowMessage('Precisa inserir um ano válido ' + sLineBreak + 'Exemplo: 2026');
+        Abort;
+  end;
   if edtIdFilme.Text <> '' then
     oFilme.idFilme := StrToInt(edtIdFilme.Text)
   else
     oFilme.idFilme := 0;
 
-  oFilme.titulo := edtTitulo.Text;
-  oFilme.diretor := edtDiretor.Text;
-  oFilme.genero := edtGenero.Text;
-  oFilme.sinopse := edtSinopse.Text;
-  oFilme.anoLancamento := edtLancamento.Text;
+  oFilme.titulo := Trim(edtTitulo.Text);
+  oFilme.diretor := Trim(edtDiretor.Text);
+  oFilme.genero := Trim(edtGenero.Text);
+  oFilme.sinopse := Trim(edtSinopse.Text);
+  oFilme.anoLancamento := Trim(edtLancamento.Text);
 
   if FEstadoDoCadastro = ecInserir then
     oFilme.Gravar
@@ -222,10 +226,7 @@ begin
 
   ControlarIndiceTab(PageControl1, 0);
 
-  if Length(edtLancamento.Text) < 4 then begin
-        ShowMessage('Precisa inserir um ano válido ' + sLineBreak + 'Exemplo: 2026');
-        Exit;
-  end;
+
 end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);

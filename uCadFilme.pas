@@ -122,6 +122,10 @@ implementation
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
 begin
+
+  if QryCatalogoidFilme.AsInteger = 0 then
+  Abort;
+
   ControlarIndiceTab(PageControl1,1);
   btnGravar.SetFocus;
   FEstadoDoCadastro:= ecAlterar;
@@ -142,6 +146,10 @@ end;
 
 procedure TfrmCadFilme.btnApagarClick(Sender: TObject);
 begin
+  if QryCatalogoidFilme.AsInteger = 0 then
+  Abort;
+
+
    try
         if (Excluir) then begin
             ControlarIndiceTab(PageControl1, 0);
@@ -588,6 +596,7 @@ end;
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+  QryCatalogo.Active := True;
   uDtmConexao.DataModule1.CriarTabela;
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';

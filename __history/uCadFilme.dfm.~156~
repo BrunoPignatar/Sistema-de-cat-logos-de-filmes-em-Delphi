@@ -21,7 +21,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcCadastro
+    ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet
@@ -273,7 +273,6 @@ object frmCadFilme: TfrmCadFilme
         Color = 14215400
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = 3
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -479,6 +478,7 @@ object frmCadFilme: TfrmCadFilme
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 4
+          OnExit = edtLancamentoExit
           OnKeyPress = edtLancamentoKeyPress
         end
         object edtSinopse: TMemo
@@ -577,6 +577,7 @@ object frmCadFilme: TfrmCadFilme
     end
   end
   object OpenDialog1: TOpenDialog
+    Filter = 'Arquivos TXT (*.txt)|*.txt'
     Left = 820
     Top = 89
   end
@@ -588,6 +589,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 248
   end
   object SaveDialog1: TSaveDialog
+    Filter = 'Arquivo CSV (*.csv)|*.csv'
     Left = 836
     Top = 145
   end

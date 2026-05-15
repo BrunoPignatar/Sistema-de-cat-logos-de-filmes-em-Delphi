@@ -21,7 +21,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 0
     Width = 1284
     Height = 491
-    ActivePage = pgcCadastro
+    ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
     object pgcPrincipal: TTabSheet
@@ -36,7 +36,7 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         TabOrder = 1
         object btnNovo: TButton
-          Left = 445
+          Left = 508
           Top = 7
           Width = 89
           Height = 35
@@ -45,7 +45,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnNovoClick
         end
         object btnAlterar: TButton
-          Left = 540
+          Left = 603
           Top = 6
           Width = 89
           Height = 35
@@ -54,7 +54,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnAlterarClick
         end
         object btnApagar: TButton
-          Left = 635
+          Left = 698
           Top = 6
           Width = 89
           Height = 35
@@ -241,7 +241,7 @@ object frmCadFilme: TfrmCadFilme
         Height = 57
         Align = alTop
         Caption = 'CADASTRO'
-        Color = clNone
+        Color = clMoneyGreen
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -27
@@ -273,7 +273,6 @@ object frmCadFilme: TfrmCadFilme
         Color = 14215400
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = 3
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -479,6 +478,7 @@ object frmCadFilme: TfrmCadFilme
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 4
+          OnExit = edtLancamentoExit
           OnKeyPress = edtLancamentoKeyPress
         end
         object edtSinopse: TMemo
@@ -577,6 +577,7 @@ object frmCadFilme: TfrmCadFilme
     end
   end
   object OpenDialog1: TOpenDialog
+    Filter = 'Arquivos TXT (*.txt)|*.txt'
     Left = 820
     Top = 89
   end
@@ -588,6 +589,7 @@ object frmCadFilme: TfrmCadFilme
     Top = 248
   end
   object SaveDialog1: TSaveDialog
+    Filter = 'Arquivo CSV (*.csv)|*.csv'
     Left = 836
     Top = 145
   end

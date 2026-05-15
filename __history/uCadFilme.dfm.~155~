@@ -241,7 +241,7 @@ object frmCadFilme: TfrmCadFilme
         Height = 57
         Align = alTop
         Caption = 'CADASTRO'
-        Color = clGreen
+        Color = clMoneyGreen
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -27
@@ -250,7 +250,6 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitTop = 3
         object Label9: TLabel
           Left = 714
           Top = 4
@@ -264,18 +263,6 @@ object frmCadFilme: TfrmCadFilme
           Font.Style = []
           ParentFont = False
         end
-        object PaintBox1: TPaintBox
-          Left = 1
-          Top = 1
-          Width = 1274
-          Height = 55
-          Align = alClient
-          OnPaint = PaintBox1Paint
-          ExplicitLeft = 355
-          ExplicitTop = 13
-          ExplicitWidth = 105
-          ExplicitHeight = 105
-        end
       end
       object Panel5: TPanel
         Left = 0
@@ -286,7 +273,6 @@ object frmCadFilme: TfrmCadFilme
         Color = 14215400
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = 3
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -492,6 +478,7 @@ object frmCadFilme: TfrmCadFilme
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 4
+          OnExit = edtLancamentoExit
           OnKeyPress = edtLancamentoKeyPress
         end
         object edtSinopse: TMemo
