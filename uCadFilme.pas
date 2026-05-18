@@ -88,6 +88,7 @@ type
     procedure edtSinopseKeyPress(Sender: TObject; var Key: Char);
     procedure edtSinopseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edtLancamentoExit(Sender: TObject);
+    procedure mskEditKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -166,6 +167,7 @@ end;
 procedure TfrmCadFilme.btnCancelarClick(Sender: TObject);
 begin
  ControlarIndiceTab(PageControl1, 0);
+ btnPesquisar.Click;
 end;
 
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
@@ -234,7 +236,7 @@ begin
 
   ControlarIndiceTab(PageControl1, 0);
 
-
+  btnPesquisar.Click;
 end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
@@ -593,6 +595,19 @@ begin
 end;
 
 
+procedure TfrmCadFilme.mskEditKeyPress(Sender: TObject; var Key: Char);
+var i: Integer;
+begin
+  if IndiceAtual = 'idFilme' then
+  begin
+  if not TryStrToInt(mskEdit.Text, I) then
+  begin
+    ShowMessage('Esse campo de pesquisa não aceita letras!!');
+    Abort;
+  end;
+  end;
+end;
+
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
@@ -612,7 +627,7 @@ end;
 
 procedure TfrmCadFilme.FormShow(Sender: TObject);
 begin
-  lblIndice.Caption:= 'Cod.Filme';
+  lblIndice.Caption:= 'Cod. Filme';
   PageControl1.ActivePageIndex := 0;
   mskEdit.SetFocus;
   QryCatalogo.Close;
@@ -630,11 +645,17 @@ procedure TfrmCadFilme.edtDiretorKeyPress(Sender: TObject; var Key: Char);
 begin
  if Key = ';' then
     Key := #0;
+
+ if not (Key in ['a'..'z', 'A'..'Z', #8]) then
+    Key := #0;
 end;
 
 procedure TfrmCadFilme.edtGeneroKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = ';' then
+    Key := #0;
+
+  if not (Key in ['a'..'z', 'A'..'Z', #8]) then
     Key := #0;
 end;
 

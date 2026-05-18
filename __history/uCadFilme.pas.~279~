@@ -122,6 +122,10 @@ implementation
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
 begin
+
+  if QryCatalogoidFilme.AsInteger = 0 then
+  Abort;
+
   ControlarIndiceTab(PageControl1,1);
   btnGravar.SetFocus;
   FEstadoDoCadastro:= ecAlterar;
@@ -142,6 +146,10 @@ end;
 
 procedure TfrmCadFilme.btnApagarClick(Sender: TObject);
 begin
+  if QryCatalogoidFilme.AsInteger = 0 then
+  Abort;
+
+
    try
         if (Excluir) then begin
             ControlarIndiceTab(PageControl1, 0);
@@ -158,6 +166,7 @@ end;
 procedure TfrmCadFilme.btnCancelarClick(Sender: TObject);
 begin
  ControlarIndiceTab(PageControl1, 0);
+ btnPesquisar.Click;
 end;
 
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
@@ -210,11 +219,11 @@ begin
   else
     oFilme.idFilme := 0;
 
-  oFilme.titulo := edtTitulo.Text;
-  oFilme.diretor := edtDiretor.Text;
-  oFilme.genero := edtGenero.Text;
-  oFilme.sinopse := edtSinopse.Text;
-  oFilme.anoLancamento := edtLancamento.Text;
+  oFilme.titulo := Trim(edtTitulo.Text);
+  oFilme.diretor := Trim(edtDiretor.Text);
+  oFilme.genero := Trim(edtGenero.Text);
+  oFilme.sinopse := Trim(edtSinopse.Text);
+  oFilme.anoLancamento := Trim(edtLancamento.Text);
 
   if FEstadoDoCadastro = ecInserir then
     oFilme.Gravar
@@ -226,7 +235,7 @@ begin
 
   ControlarIndiceTab(PageControl1, 0);
 
-
+  btnPesquisar.Click;
 end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
@@ -386,6 +395,15 @@ var I:Integer;
     WhereOrAnd: string;
     CondicaoSQL: string;
 begin
+
+  if IndiceAtual = QryCatalogoidFilme.AsInteger then
+  begin
+  if not TryStrToInt(mskEdit.Text, I) then
+  begin
+    ShowMessage('Esse campo de pesquisa não aceita letras!!');
+    Exit;
+  end;
+  end;
 
   if mskEdit.Text='' then
   begin
@@ -588,6 +606,7 @@ end;
 procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+  QryCatalogo.Active := True;
   uDtmConexao.DataModule1.CriarTabela;
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
@@ -603,7 +622,7 @@ end;
 
 procedure TfrmCadFilme.FormShow(Sender: TObject);
 begin
-  lblIndice.Caption:= 'Cod.Filme';
+  lblIndice.Caption:= 'Cod. Filme';
   PageControl1.ActivePageIndex := 0;
   mskEdit.SetFocus;
   QryCatalogo.Close;
@@ -621,11 +640,17 @@ procedure TfrmCadFilme.edtDiretorKeyPress(Sender: TObject; var Key: Char);
 begin
  if Key = ';' then
     Key := #0;
+
+ if not (Key in ['a'..'z', 'A'..'Z', #8]) then
+    Key := #0;
 end;
 
 procedure TfrmCadFilme.edtGeneroKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = ';' then
+    Key := #0;
+
+  if not (Key in ['a'..'z', 'A'..'Z', #8]) then
     Key := #0;
 end;
 

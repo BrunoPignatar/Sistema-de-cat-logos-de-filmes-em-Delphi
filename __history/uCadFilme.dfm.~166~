@@ -36,7 +36,7 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         TabOrder = 1
         object btnNovo: TButton
-          Left = 445
+          Left = 508
           Top = 7
           Width = 89
           Height = 35
@@ -45,7 +45,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnNovoClick
         end
         object btnAlterar: TButton
-          Left = 540
+          Left = 603
           Top = 6
           Width = 89
           Height = 35
@@ -54,7 +54,7 @@ object frmCadFilme: TfrmCadFilme
           OnClick = btnAlterarClick
         end
         object btnApagar: TButton
-          Left = 635
+          Left = 698
           Top = 6
           Width = 89
           Height = 35
@@ -628,7 +628,7 @@ object frmCadFilme: TfrmCadFilme
       Size = 500
     end
     object QryCatalogoanoLancamento: TStringField
-      DisplayLabel = 'AnoLan'#231'amento'
+      DisplayLabel = 'Ano Lan'#231'amento'
       FieldName = 'anoLancamento'
       Size = 10
     end

@@ -110,6 +110,7 @@ object frmCadFilme: TfrmCadFilme
           Text = ''
           TextHint = 'Fa'#231'a sua Pesquisa'
           OnChange = mskEditChange
+          OnKeyPress = mskEditKeyPress
         end
         object btnExportarCSV: TPngBitBtn
           Left = 245
@@ -628,7 +629,7 @@ object frmCadFilme: TfrmCadFilme
       Size = 500
     end
     object QryCatalogoanoLancamento: TStringField
-      DisplayLabel = 'AnoLan'#231'amento'
+      DisplayLabel = 'Ano Lan'#231'amento'
       FieldName = 'anoLancamento'
       Size = 10
     end
