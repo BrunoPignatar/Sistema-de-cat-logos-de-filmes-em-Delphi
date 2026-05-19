@@ -1,0 +1,343 @@
+﻿unit uBoasVindas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.ExtCtrls, Vcl.StdCtrls, System.Math, Vcl.Imaging.pngimage;
+
+type
+  TfrmBoasVindas = class(TForm)
+    pnlFundo: TPanel;
+    pnlCentro: TPanel;
+    pnlTopo: TPanel;
+    pnlBotao: TPanel;
+    lblCine: TLabel;
+    lblTrack: TLabel;
+    lblSubtitulo: TLabel;
+    lblDescricao: TLabel;
+    lblVersao: TLabel;
+    lblIconeFilme: TLabel;
+    btnAcessar: TButton;
+    shpLinhaEsq: TShape;
+    shpLinhaDireita: TShape;
+    tmrAnimar: TTimer;
+    tmrPulsar: TTimer;
+    btnFechar: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure btnAcessarClick(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure tmrAnimarTimer(Sender: TObject);
+    procedure tmrPulsarTimer(Sender: TObject);
+    procedure btnAcessarMouseEnter(Sender: TObject);
+    procedure btnAcessarMouseLeave(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    FAlpha: Byte;
+    FPulsarUp: Boolean;
+    FPulsarAlpha: Integer;
+    procedure DesenharFundo(ACanvas: TCanvas);
+    procedure AbrirCadastro;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmBoasVindas: TfrmBoasVindas;
+
+implementation
+
+{$R *.dfm}
+
+uses
+  uCadFilme, uDtmConexao, uPagPrincipal;
+
+procedure TfrmBoasVindas.FormCreate(Sender: TObject);
+begin
+  uDtmConexao.DataModule1.CriarBanco;
+  // Configurações da janela
+  Self.BorderStyle := bsNone;
+  Self.WindowState := wsMaximized;
+  Self.Color := $00100808;
+  Self.DoubleBuffered := True;
+
+  // Estado inicial da animação
+  FAlpha := 0;
+  FPulsarUp := True;
+  FPulsarAlpha := 180;
+
+  // Painel de fundo principal
+  pnlFundo.Align := alClient;
+  pnlFundo.BevelOuter := bvNone;
+  pnlFundo.Color := $00100808;
+  pnlFundo.ParentBackground := False;
+
+  // Painel central (card)
+  pnlCentro.Width := 560;
+  pnlCentro.Height := 420;
+  pnlCentro.Left := (Self.ClientWidth - pnlCentro.Width) div 2;
+  pnlCentro.Top := (Self.ClientHeight - pnlCentro.Height) div 2;
+  pnlCentro.BevelOuter := bvNone;
+  pnlCentro.Color := $00160E0E;
+  pnlCentro.ParentBackground := False;
+
+  // Label CINE
+  lblCine.Font.Name := 'Segoe UI';
+  lblCine.Font.Size := 52;
+  lblCine.Font.Style := [fsBold];
+  lblCine.Font.Color := clWhite;
+  lblCine.Caption := 'CINE';
+  lblCine.Left := 80;
+  lblCine.Top := 80;
+  lblCine.AutoSize := True;
+  lblCine.Transparent := True;
+
+  // Label TRACK (em vermelho)
+  lblTrack.Font.Name := 'Segoe UI';
+  lblTrack.Font.Size := 52;
+  lblTrack.Font.Style := [fsBold];
+  lblTrack.Font.Color := $002035D0; // vermelho BGR
+  lblTrack.Caption := 'TRA';
+  lblTrack.Top := 80;
+  lblTrack.AutoSize := True;
+  lblTrack.Transparent := True;
+
+  // Subtítulo
+  lblSubtitulo.Font.Name := 'Segoe UI Light';
+  lblSubtitulo.Font.Size := 11;
+  lblSubtitulo.Font.Style := [];
+  lblSubtitulo.Font.Color := $00787878;
+  lblSubtitulo.Caption := 'CATÁLOGO DE FILMES';
+  lblSubtitulo.Left := 80;
+  lblSubtitulo.Top := 155;
+  lblSubtitulo.AutoSize := True;
+  lblSubtitulo.Transparent := True;
+
+  // Descrição
+  lblDescricao.Font.Name := 'Segoe UI';
+  lblDescricao.Font.Size := 10;
+  lblDescricao.Font.Style := [];
+  lblDescricao.Font.Color := $00606060;
+  lblDescricao.Caption := 'Organize, descubra e gerencie' + #13#10 +
+                           'sua coleção completa de filmes.';
+  lblDescricao.Left := 80;
+  lblDescricao.Top := 215;
+  lblDescricao.AutoSize := True;
+  lblDescricao.Transparent := True;
+
+  // Versão
+  lblVersao.Font.Name := 'Segoe UI';
+  lblVersao.Font.Size := 8;
+  lblVersao.Font.Color := $00383838;
+  lblVersao.Caption := 'v1.0  •  Delphi VCL';
+  lblVersao.Left := 80;
+  lblVersao.Top := 370;
+  lblVersao.AutoSize := True;
+  lblVersao.Transparent := True;
+
+  // Ícone decorativo
+  lblIconeFilme.Font.Name := 'Segoe UI';
+  lblIconeFilme.Font.Size := 36;
+  lblIconeFilme.Font.Color := $002035D0;
+  lblIconeFilme.Caption := '🎬';
+  lblIconeFilme.Left := 380;
+  lblIconeFilme.Top := 100;
+  lblIconeFilme.AutoSize := True;
+  lblIconeFilme.Transparent := True;
+
+  // Botão ACESSAR CADASTRO
+  btnAcessar.Caption := 'ACESSAR CATÁLOGO';
+  btnAcessar.Left := 80;
+  btnAcessar.Top := 300;
+  btnAcessar.Width := 220;
+  btnAcessar.Height := 46;
+  btnAcessar.Font.Name := 'Segoe UI';
+  btnAcessar.Font.Size := 10;
+  btnAcessar.Font.Style := [fsBold];
+  btnAcessar.Font.Color := clWhite;
+  btnAcessar.Cursor := crHandPoint;
+
+  // Linhas decorativas
+  shpLinhaEsq.Pen.Color := $002035D0;
+  shpLinhaEsq.Pen.Width := 2;
+  shpLinhaEsq.Left := 80;
+  shpLinhaEsq.Top := 185;
+  shpLinhaEsq.Width := 40;
+  shpLinhaEsq.Height := 2;
+  shpLinhaEsq.Shape := stRectangle;
+  shpLinhaEsq.Brush.Color := $002035D0;
+
+  shpLinhaDireita.Pen.Color := $00383838;
+  shpLinhaDireita.Pen.Width := 1;
+  shpLinhaDireita.Left := 130;
+  shpLinhaDireita.Top := 185;
+  shpLinhaDireita.Width := 260;
+  shpLinhaDireita.Height := 1;
+  shpLinhaDireita.Shape := stRectangle;
+  shpLinhaDireita.Brush.Color := $00383838;
+
+  // Configurar posição do TRACK após o CINE
+  lblCine.Left := 80;
+  lblTrack.Left := 80 + lblCine.Width;
+  lblTrack.Top := 80;
+
+  // Timers
+  tmrAnimar.Interval := 20;
+  tmrAnimar.Enabled := True;
+
+  tmrPulsar.Interval := 50;
+  tmrPulsar.Enabled := True;
+end;
+
+procedure TfrmBoasVindas.FormDestroy(Sender: TObject);
+begin
+  tmrAnimar.Enabled := False;
+  tmrPulsar.Enabled := False;
+end;
+
+procedure TfrmBoasVindas.FormPaint(Sender: TObject);
+begin
+  DesenharFundo(Self.Canvas);
+end;
+
+procedure TfrmBoasVindas.DesenharFundo(ACanvas: TCanvas);
+var
+  i: Integer;
+  LBrush: TBrush;
+  X, W: Integer;
+begin
+  // Fundo base escuro
+  ACanvas.Brush.Color := $00100808;
+  ACanvas.FillRect(Self.ClientRect);
+
+  // Desenhar filmstrip no topo
+  ACanvas.Brush.Color := $000D0D14;
+  ACanvas.FillRect(Rect(0, 0, Self.ClientWidth, 50));
+
+  // Furos da filmstrip
+  ACanvas.Brush.Color := $00100808;
+  ACanvas.Pen.Color := $00202028;
+  ACanvas.Pen.Width := 1;
+  X := 10;
+  while X < Self.ClientWidth do
+  begin
+    ACanvas.RoundRect(X, 11, X + 26, 39, 4, 4);
+    Inc(X, 46);
+  end;
+
+  // Filmstrip inferior
+  ACanvas.Brush.Color := $000D0D14;
+  ACanvas.FillRect(Rect(0, Self.ClientHeight - 50, Self.ClientWidth, Self.ClientHeight));
+
+  ACanvas.Brush.Color := $00100808;
+  X := 10;
+  while X < Self.ClientWidth do
+  begin
+    ACanvas.RoundRect(X, Self.ClientHeight - 39, X + 26, Self.ClientHeight - 11, 4, 4);
+    Inc(X, 46);
+  end;
+
+  // Linha de brilho topo
+  ACanvas.Pen.Color := $002035D0;
+  ACanvas.Pen.Width := 1;
+  ACanvas.MoveTo(0, 50);
+  ACanvas.LineTo(Self.ClientWidth, 50);
+
+  // Linha de brilho base
+  ACanvas.MoveTo(0, Self.ClientHeight - 50);
+  ACanvas.LineTo(Self.ClientWidth, Self.ClientHeight - 50);
+
+  // Borda do card central
+  ACanvas.Brush.Style := bsClear;
+  ACanvas.Pen.Color := $00282828;
+  ACanvas.Pen.Width := 1;
+  ACanvas.Rectangle(
+    pnlCentro.Left, pnlCentro.Top,
+    pnlCentro.Left + pnlCentro.Width,
+    pnlCentro.Top + pnlCentro.Height
+  );
+
+  // Borda esquerda vermelha do card
+  ACanvas.Pen.Color := $002035D0;
+  ACanvas.Pen.Width := 3;
+  ACanvas.MoveTo(pnlCentro.Left, pnlCentro.Top);
+  ACanvas.LineTo(pnlCentro.Left, pnlCentro.Top + pnlCentro.Height);
+end;
+
+procedure TfrmBoasVindas.tmrAnimarTimer(Sender: TObject);
+begin
+  // Reposicionar lblTrack dinamicamente (após AutoSize do lblCine)
+  if lblCine.Width > 10 then
+    lblTrack.Left := lblCine.Left + lblCine.Width;
+
+  // Fade-in suave do painel central
+  if FAlpha < 255 then
+  begin
+    Inc(FAlpha, 8);
+    if FAlpha > 255 then FAlpha := 255;
+
+    pnlCentro.Left := (Self.ClientWidth - pnlCentro.Width) div 2;
+    pnlCentro.Top  := (Self.ClientHeight - pnlCentro.Height) div 2;
+  end;
+
+  Invalidate;
+end;
+
+procedure TfrmBoasVindas.tmrPulsarTimer(Sender: TObject);
+begin
+  // Efeito pulsar no botão (cor oscilante sutil)
+  if FPulsarUp then
+  begin
+    Inc(FPulsarAlpha, 5);
+    if FPulsarAlpha >= 220 then FPulsarUp := False;
+  end
+  else
+  begin
+    Dec(FPulsarAlpha, 5);
+    if FPulsarAlpha <= 160 then FPulsarUp := True;
+  end;
+end;
+
+procedure TfrmBoasVindas.btnAcessarMouseEnter(Sender: TObject);
+begin
+  btnAcessar.Font.Color := clWhite;
+end;
+
+procedure TfrmBoasVindas.btnAcessarMouseLeave(Sender: TObject);
+begin
+  btnAcessar.Font.Color := clWhite;
+end;
+
+
+procedure TfrmBoasVindas.btnFecharClick(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+procedure TfrmBoasVindas.btnAcessarClick(Sender: TObject);
+begin
+  AbrirCadastro;
+end;
+
+procedure TfrmBoasVindas.AbrirCadastro;
+begin
+  tmrAnimar.Enabled := False;
+  tmrPulsar.Enabled := False;
+
+  if not Assigned(frmPagPrincipal) then
+    frmPagPrincipal := TfrmPagPrincipal.Create(Application);
+
+  frmPagPrincipal.Show;
+  Self.Hide;
+end;
+
+procedure TfrmBoasVindas.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+  frmBoasVindas := nil;
+end;
+
+end.

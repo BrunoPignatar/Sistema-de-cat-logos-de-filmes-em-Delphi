@@ -53,7 +53,7 @@ implementation
 {$R *.dfm}
 
 uses
-  uCadFilme, uDtmConexao;
+  uCadFilme, uDtmConexao, uPagPrincipal;
 
 procedure TfrmBoasVindas.FormCreate(Sender: TObject);
 begin
@@ -100,7 +100,7 @@ begin
   lblTrack.Font.Size := 52;
   lblTrack.Font.Style := [fsBold];
   lblTrack.Font.Color := $002035D0; // vermelho BGR
-  lblTrack.Caption := 'TRA';
+  lblTrack.Caption := 'SHOW';
   lblTrack.Top := 80;
   lblTrack.AutoSize := True;
   lblTrack.Transparent := True;
@@ -142,7 +142,7 @@ begin
   lblIconeFilme.Font.Name := 'Segoe UI';
   lblIconeFilme.Font.Size := 36;
   lblIconeFilme.Font.Color := $002035D0;
-  lblIconeFilme.Caption := '🎬';
+  lblIconeFilme.Caption := '';
   lblIconeFilme.Left := 380;
   lblIconeFilme.Top := 100;
   lblIconeFilme.AutoSize := True;
@@ -327,10 +327,10 @@ begin
   tmrAnimar.Enabled := False;
   tmrPulsar.Enabled := False;
 
-  if not Assigned(frmCadFilme) then
-    frmCadFilme := TfrmCadFilme.Create(Application);
+  if not Assigned(frmPagPrincipal) then
+    frmPagPrincipal := TfrmPagPrincipal.Create(Application);
 
-  frmCadFilme.Show;
+  frmPagPrincipal.Show;
   Self.Hide;
 end;
 

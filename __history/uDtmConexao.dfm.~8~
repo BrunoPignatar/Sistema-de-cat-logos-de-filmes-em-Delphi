@@ -1,0 +1,12 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 246
+  Width = 468
+  object ConexaoDB: TFDConnection
+    Params.Strings = (
+      'DriverID=MSSQL')
+    Left = 240
+    Top = 88
+  end
+end

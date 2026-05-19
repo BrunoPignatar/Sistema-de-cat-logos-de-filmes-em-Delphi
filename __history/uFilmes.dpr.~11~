@@ -1,0 +1,24 @@
+program uFilmes;
+
+uses
+  Vcl.Forms,
+  uCadFilme in 'uCadFilme.pas' {frmCadFilme},
+  uDtmConexao in 'uDtmConexao.pas' {DataModule1: TDataModule},
+  cCadFilme in 'Classes\cCadFilme.pas',
+  uEnum in 'Classes\uEnum.pas',
+  uBoasVindas in 'BoasVindas\uBoasVindas.pas' {frmBoasVindas},
+  uPagPrincipal in 'BoasVindas\uPagPrincipal.pas' {frmPagPrincipal};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TDataModule1, DataModule1);
+  Application.CreateForm(TfrmPagPrincipal);
+//  Application.CreateForm(TfrmBoasVindas, frmBoasVindas);
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.
+Application.CreateForm(TDataModule1, DataModule1);
+

@@ -1,0 +1,167 @@
+unit uPagPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.ExtCtrls,
+  Vcl.StdCtrls, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.Mask,
+  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils, Vcl.Imaging.pngimage;
+
+
+type
+  TfrmPagPrincipal = class(TForm)
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
+    Panel6: TPanel;
+    Panel7: TPanel;
+    Panel8: TPanel;
+    Panel9: TPanel;
+    Panel10: TPanel;
+    Panel11: TPanel;
+    Panel14: TPanel;
+    Panel15: TPanel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    btnCadastrar: TPanel;
+    btnSortear: TPanel;
+    lblGenero1: TPanel;
+    lblGenero2: TPanel;
+    QryCartaz: TFDQuery;
+    fdtncfldQryCartazidFilme: TFDAutoIncField;
+    strngfldQryCartaztitulo: TStringField;
+    strngfldQryCartazdiretor: TStringField;
+    strngfldQryCartazgenero: TStringField;
+    strngfldQryCartazsinopse: TStringField;
+    strngfldQryCartazanoLancamento: TStringField;
+    lblSinopse1: TMemo;
+    lblSinopse2: TMemo;
+    Label6: TLabel;
+    Label7: TLabel;
+    lblData2: TLabel;
+    lblData1: TLabel;
+    Panel12: TPanel;
+    Panel13: TPanel;
+    Panel16: TPanel;
+    Panel17: TPanel;
+    img2: TImage;
+    img1: TImage;
+    QryCartazfoto: TBlobField;
+    lblTitulo1: TMemo;
+    lblTitulo2: TMemo;
+    Image1: TImage;
+    procedure Panel15Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnSortearClick(Sender: TObject);
+    procedure btnCadastrarClick(Sender: TObject);
+  private
+    procedure SortearFilmes;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPagPrincipal: TfrmPagPrincipal;
+
+implementation
+
+uses
+  uCadFilme;
+
+{$R *.dfm}
+
+procedure TfrmPagPrincipal.btnCadastrarClick(Sender: TObject);
+begin
+  if not Assigned(frmCadFilme) then
+    frmCadFilme := TfrmCadFilme.Create(Application);
+
+  frmCadFilme.Show;
+  Self.Hide;
+end;
+
+procedure TfrmPagPrincipal.btnSortearClick(Sender: TObject);
+begin
+  SortearFilmes;
+end;
+
+procedure TfrmPagPrincipal.FormCreate(Sender: TObject);
+begin
+  SortearFilmes;
+end;
+
+procedure TfrmPagPrincipal.Panel15Click(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+
+procedure TfrmPagPrincipal.SortearFilmes;
+var
+  ID1, ID2: Integer;
+  MS: TMemoryStream;
+begin
+  QryCartaz.Close;
+  QryCartaz.SQL.Text := 'SELECT TOP 1 * FROM catalogo ORDER BY NEWID()';
+  QryCartaz.Open;
+
+  if not QryCartaz.IsEmpty then
+  begin
+    ID1 := QryCartaz.FieldByName('idFilme').AsInteger;
+    lblTitulo1.Lines.Text   := QryCartaz.FieldByName('titulo').AsString;
+    lblGenero1.Caption  := QryCartaz.FieldByName('genero').AsString;
+    lblSinopse1.Lines.Text := QryCartaz.FieldByName('sinopse').AsString;
+    lblData1.Caption    := QryCartaz.FieldByName('anoLancamento').AsString;
+
+    img1.Picture.Assign(nil);
+    if not QryCartaz.FieldByName('foto').IsNull then
+    begin
+      MS := TMemoryStream.Create;
+      try
+        TBlobField(QryCartaz.FieldByName('foto')).SaveToStream(MS);
+        MS.Position := 0;
+        img1.Picture.LoadFromStream(MS);
+      finally
+        MS.Free;
+      end;
+    end;
+  end;
+
+  QryCartaz.Close;
+  QryCartaz.SQL.Text :=
+    'SELECT TOP 1 * FROM catalogo ' +
+    'WHERE idFilme <> :idFilme ' +
+    'ORDER BY NEWID()';
+  QryCartaz.ParamByName('idFilme').AsInteger := ID1;
+  QryCartaz.Open;
+
+  if not QryCartaz.IsEmpty then
+  begin
+    lblTitulo2.Lines.Text  := QryCartaz.FieldByName('titulo').AsString;
+    lblGenero2.Caption  := QryCartaz.FieldByName('genero').AsString;
+    lblSinopse2.Lines.Text := QryCartaz.FieldByName('sinopse').AsString;
+    lblData2.Caption    := QryCartaz.FieldByName('anoLancamento').AsString;
+
+    img2.Picture.Assign(nil);
+    if not QryCartaz.FieldByName('foto').IsNull then
+    begin
+      MS := TMemoryStream.Create;
+      try
+        TBlobField(QryCartaz.FieldByName('foto')).SaveToStream(MS);
+        MS.Position := 0;
+        img2.Picture.LoadFromStream(MS);
+      finally
+        MS.Free;
+      end;
+    end;
+  end;
+end;
+
+end.

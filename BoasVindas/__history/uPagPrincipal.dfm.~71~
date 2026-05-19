@@ -1,0 +1,535 @@
+object frmPagPrincipal: TfrmPagPrincipal
+  Left = 0
+  Top = 0
+  BorderIcons = [biMinimize, biMaximize]
+  BorderStyle = bsNone
+  Caption = 'Cartaz'
+  ClientHeight = 554
+  ClientWidth = 1053
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1053
+    Height = 554
+    Align = alClient
+    Caption = 'Cartaz'
+    Color = clBlack
+    ParentBackground = False
+    TabOrder = 0
+    object Label3: TLabel
+      Left = 62
+      Top = 15
+      Width = 58
+      Height = 29
+      Caption = 'SHOW'
+      FocusControl = Panel1
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clRed
+      Font.Height = -24
+      Font.Name = 'Impact'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label4: TLabel
+      Left = 9
+      Top = 1
+      Width = 12
+      Height = 80
+      Caption = '.'
+      FocusControl = Panel1
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clRed
+      Font.Height = -64
+      Font.Name = 'Impact'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label5: TLabel
+      Left = 27
+      Top = 54
+      Width = 48
+      Height = 15
+      Caption = 'CARTAZ'
+      FocusControl = Panel1
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -16
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Panel16: TPanel
+      Left = 103
+      Top = 50
+      Width = 274
+      Height = 496
+      Caption = 'Panel16'
+      TabOrder = 4
+      object img1: TImage
+        Left = 50
+        Top = 24
+        Width = 163
+        Height = 229
+        ParentShowHint = False
+        Proportional = True
+        ShowHint = True
+        Stretch = True
+      end
+    end
+    object Panel2: TPanel
+      Left = 1
+      Top = 1
+      Width = 1051
+      Height = 41
+      Align = alTop
+      Color = clBlack
+      ParentBackground = False
+      TabOrder = 0
+      object Label1: TLabel
+        Left = 8
+        Top = 7
+        Width = 43
+        Height = 29
+        Caption = 'CINE'
+        FocusControl = Panel1
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -24
+        Font.Name = 'Impact'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label2: TLabel
+        Left = 54
+        Top = 7
+        Width = 58
+        Height = 29
+        Caption = 'SHOW'
+        FocusControl = Panel1
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clRed
+        Font.Height = -24
+        Font.Name = 'Impact'
+        Font.Style = []
+        ParentFont = False
+      end
+      object btnCadastrar: TPanel
+        Left = 876
+        Top = 4
+        Width = 172
+        Height = 33
+        Cursor = crHandPoint
+        Align = alCustom
+        BevelOuter = bvSpace
+        Caption = '+ Cadastrar Filme'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        OnClick = btnCadastrarClick
+      end
+      object btnSortear: TPanel
+        Left = 702
+        Top = 4
+        Width = 170
+        Height = 33
+        Cursor = crHandPoint
+        Align = alCustom
+        BevelOuter = bvSpace
+        Caption = 'Mudar Cartaz'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -11
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 1
+        OnClick = btnSortearClick
+      end
+    end
+    object Panel3: TPanel
+      Left = 123
+      Top = 309
+      Width = 232
+      Height = 229
+      BevelOuter = bvNone
+      Caption = 'Panel3'
+      TabOrder = 1
+      object Label7: TLabel
+        Left = 7
+        Top = 208
+        Width = 144
+        Height = 15
+        Caption = 'Ano de Lan'#231'amento:'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -21
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentFont = False
+      end
+      object lblData1: TLabel
+        Left = 157
+        Top = 208
+        Width = 40
+        Height = 15
+        Caption = 'data1'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -21
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentFont = False
+      end
+      object lblTitulo1: TLabel
+        Left = 10
+        Top = 7
+        Width = 48
+        Height = 15
+        Caption = 'titulo'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -21
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Panel4: TPanel
+        Left = 0
+        Top = 0
+        Width = 232
+        Height = 4
+        Align = alTop
+        BevelOuter = bvNone
+        Color = clRed
+        ParentBackground = False
+        TabOrder = 0
+      end
+      object Panel5: TPanel
+        Left = 0
+        Top = 225
+        Width = 232
+        Height = 4
+        Align = alBottom
+        BevelOuter = bvNone
+        Color = clRed
+        ParentBackground = False
+        TabOrder = 1
+        ExplicitTop = 317
+      end
+      object Panel6: TPanel
+        Left = 0
+        Top = 4
+        Width = 4
+        Height = 221
+        Align = alLeft
+        BevelOuter = bvNone
+        Color = clRed
+        ParentBackground = False
+        TabOrder = 2
+        ExplicitHeight = 313
+        object Panel7: TPanel
+          Left = 0
+          Top = 0
+          Width = 4
+          Height = 221
+          Align = alLeft
+          BevelOuter = bvNone
+          Color = clRed
+          ParentBackground = False
+          TabOrder = 0
+          ExplicitHeight = 313
+        end
+      end
+      object Panel8: TPanel
+        Left = 228
+        Top = 4
+        Width = 4
+        Height = 221
+        Align = alRight
+        BevelOuter = bvNone
+        Color = clRed
+        ParentBackground = False
+        TabOrder = 3
+        ExplicitHeight = 313
+      end
+      object lblGenero1: TPanel
+        Left = 9
+        Top = 34
+        Width = 212
+        Height = 30
+        Alignment = taLeftJustify
+        BevelOuter = bvNone
+        Caption = 'genero'
+        Enabled = False
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clRed
+        Font.Height = -21
+        Font.Name = 'Fixedsys'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 4
+      end
+    end
+    object Panel15: TPanel
+      Left = 970
+      Top = 519
+      Width = 80
+      Height = 32
+      Cursor = crHandPoint
+      Caption = 'FECHAR'
+      Color = clBlack
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -11
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 2
+      StyleElements = [seFont, seClient]
+      OnClick = Panel15Click
+    end
+    object lblSinopse1: TMemo
+      Left = 129
+      Top = 383
+      Width = 218
+      Height = 118
+      BevelOuter = bvNone
+      BorderStyle = bsNone
+      Color = clBlack
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -21
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      Lines.Strings = (
+        'lblSinopse1')
+      ParentFont = False
+      ReadOnly = True
+      TabOrder = 3
+    end
+    object Panel17: TPanel
+      Left = 680
+      Top = 50
+      Width = 274
+      Height = 496
+      Caption = 'Panel16'
+      TabOrder = 5
+      object img2: TImage
+        Left = 57
+        Top = 11
+        Width = 165
+        Height = 242
+        ParentShowHint = False
+        Proportional = True
+        ShowHint = True
+        Stretch = True
+      end
+    end
+  end
+  object Panel9: TPanel
+    Left = 701
+    Top = 309
+    Width = 232
+    Height = 229
+    BevelOuter = bvNone
+    Caption = 'Panel3'
+    Color = clBlack
+    ParentBackground = False
+    TabOrder = 1
+    object Label6: TLabel
+      Left = 8
+      Top = 208
+      Width = 144
+      Height = 15
+      Caption = 'Ano de Lan'#231'amento:'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -21
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lblData2: TLabel
+      Left = 158
+      Top = 208
+      Width = 40
+      Height = 15
+      Caption = 'data2'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -21
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lblTitulo2: TLabel
+      Left = 8
+      Top = 7
+      Width = 48
+      Height = 15
+      Caption = 'titulo'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -21
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Panel10: TPanel
+      Left = 0
+      Top = 0
+      Width = 232
+      Height = 4
+      Align = alTop
+      BevelOuter = bvNone
+      Color = clRed
+      ParentBackground = False
+      TabOrder = 0
+    end
+    object Panel11: TPanel
+      Left = 0
+      Top = 225
+      Width = 232
+      Height = 4
+      Align = alBottom
+      BevelOuter = bvNone
+      Color = clRed
+      ParentBackground = False
+      TabOrder = 1
+      ExplicitTop = 317
+    end
+    object Panel14: TPanel
+      Left = 228
+      Top = 4
+      Width = 4
+      Height = 221
+      Align = alRight
+      BevelOuter = bvNone
+      Color = clRed
+      ParentBackground = False
+      TabOrder = 2
+      ExplicitHeight = 313
+    end
+    object lblGenero2: TPanel
+      Left = 9
+      Top = 41
+      Width = 204
+      Height = 16
+      Alignment = taLeftJustify
+      BevelOuter = bvNone
+      Caption = 'genero'
+      Enabled = False
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clRed
+      Font.Height = -21
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+    end
+    object lblSinopse2: TMemo
+      Left = 6
+      Top = 74
+      Width = 218
+      Height = 118
+      BevelOuter = bvNone
+      BorderStyle = bsNone
+      Color = clBlack
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -21
+      Font.Name = 'Fixedsys'
+      Font.Style = []
+      Lines.Strings = (
+        'lblSinopse1')
+      ParentFont = False
+      ReadOnly = True
+      TabOrder = 4
+    end
+    object Panel12: TPanel
+      Left = 0
+      Top = 4
+      Width = 4
+      Height = 221
+      Align = alLeft
+      BevelOuter = bvNone
+      Color = clRed
+      ParentBackground = False
+      TabOrder = 5
+      ExplicitHeight = 313
+      object Panel13: TPanel
+        Left = 0
+        Top = 0
+        Width = 4
+        Height = 221
+        Align = alLeft
+        BevelOuter = bvNone
+        Color = clRed
+        ParentBackground = False
+        TabOrder = 0
+        ExplicitHeight = 313
+      end
+    end
+  end
+  object QryCartaz: TFDQuery
+    Connection = DataModule1.ConexaoDB
+    SQL.Strings = (
+      'select * from catalogo')
+    Left = 430
+    Top = 193
+    object fdtncfldQryCartazidFilme: TFDAutoIncField
+      DisplayLabel = 'Cod. Filme'
+      FieldName = 'idFilme'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
+    end
+    object strngfldQryCartaztitulo: TStringField
+      DisplayLabel = 'T'#237'tulo'
+      FieldName = 'titulo'
+      Required = True
+      Size = 100
+    end
+    object strngfldQryCartazdiretor: TStringField
+      DisplayLabel = 'Diretor'
+      FieldName = 'diretor'
+      Required = True
+      Size = 100
+    end
+    object strngfldQryCartazgenero: TStringField
+      DisplayLabel = 'G'#234'nero'
+      FieldName = 'genero'
+      Size = 50
+    end
+    object strngfldQryCartazsinopse: TStringField
+      DisplayLabel = 'Sinopse'
+      FieldName = 'sinopse'
+      Size = 500
+    end
+    object strngfldQryCartazanoLancamento: TStringField
+      DisplayLabel = 'Ano Lan'#231'amento'
+      FieldName = 'anoLancamento'
+      Size = 10
+    end
+    object QryCartazfoto: TBlobField
+      FieldName = 'foto'
+      Origin = 'foto'
+      Size = 2147483647
+    end
+  end
+end

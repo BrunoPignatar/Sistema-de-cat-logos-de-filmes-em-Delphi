@@ -2,8 +2,9 @@ object frmCadFilme: TfrmCadFilme
   Left = 0
   Top = 0
   BorderIcons = [biMinimize, biMaximize]
-  ClientHeight = 491
-  ClientWidth = 1284
+  BorderStyle = bsNone
+  ClientHeight = 530
+  ClientWidth = 1300
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,22 +20,29 @@ object frmCadFilme: TfrmCadFilme
   object PageControl1: TPageControl
     Left = 0
     Top = 0
-    Width = 1284
-    Height = 491
+    Width = 1300
+    Height = 530
     ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 1284
+    ExplicitHeight = 491
     object pgcPrincipal: TTabSheet
       Caption = 'Consulta'
+      ExplicitWidth = 1276
+      ExplicitHeight = 463
       object Panel1: TPanel
         Left = 0
-        Top = 416
-        Width = 1276
+        Top = 455
+        Width = 1292
         Height = 47
         Align = alBottom
-        Color = 14215400
+        BevelOuter = bvNone
+        Color = clMedGray
         ParentBackground = False
         TabOrder = 1
+        ExplicitTop = 416
+        ExplicitWidth = 1276
         object btnNovo: TButton
           Left = 508
           Top = 7
@@ -76,12 +84,14 @@ object frmCadFilme: TfrmCadFilme
       object Panel2: TPanel
         Left = 0
         Top = 0
-        Width = 1276
+        Width = 1292
         Height = 49
         Align = alTop
-        Color = 14215400
+        BevelOuter = bvNone
+        Color = clMedGray
         ParentBackground = False
         TabOrder = 0
+        ExplicitWidth = 1276
         object lblIndice: TLabel
           Left = 9
           Top = 3
@@ -103,7 +113,7 @@ object frmCadFilme: TfrmCadFilme
           Top = 22
           Width = 137
           Height = 19
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           ParentCtl3D = False
           TabOrder = 0
@@ -153,24 +163,44 @@ object frmCadFilme: TfrmCadFilme
             10E7420D22CA0BC80A4069E219104B01F173720CA0D805E86140FB5820190000
             6C8B2711D27AAC7C0000000049454E44AE426082}
         end
+        object btnCartaz: TPngBitBtn
+          Left = 476
+          Top = 18
+          Width = 100
+          Height = 28
+          Hint = 'Importar Arquivos TXT'
+          Caption = 'Ver Cartaz'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Fixedsys'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 4
+          OnClick = btnCartazClick
+        end
       end
       object Panel3: TPanel
         Left = 0
         Top = 49
-        Width = 1276
-        Height = 367
+        Width = 1292
+        Height = 406
         Align = alClient
         TabOrder = 2
+        ExplicitWidth = 1276
+        ExplicitHeight = 367
         object grdFilmes: TDBGrid
           Left = 1
           Top = 1
-          Width = 1274
-          Height = 365
+          Width = 1290
+          Height = 404
           Align = alClient
-          Color = 14215400
+          Color = clMedGray
           DataSource = dtsCatalogo
           DrawingStyle = gdsClassic
-          FixedColor = 14215400
+          FixedColor = clMedGray
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -235,14 +265,16 @@ object frmCadFilme: TfrmCadFilme
     object pgcCadastro: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
+      ExplicitWidth = 1276
+      ExplicitHeight = 463
       object Panel4: TPanel
         Left = 0
         Top = 0
-        Width = 1276
+        Width = 1292
         Height = 57
         Align = alTop
         Caption = 'CADASTRO'
-        Color = clMoneyGreen
+        Color = clMedGray
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -27
@@ -251,6 +283,7 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
+        ExplicitWidth = 1276
         object Label9: TLabel
           Left = 714
           Top = 4
@@ -268,12 +301,16 @@ object frmCadFilme: TfrmCadFilme
       object Panel5: TPanel
         Left = 0
         Top = 57
-        Width = 1276
-        Height = 359
+        Width = 1292
+        Height = 398
         Align = alClient
-        Color = 14215400
+        Color = clMedGray
         ParentBackground = False
         TabOrder = 1
+        ExplicitLeft = -3
+        ExplicitTop = 63
+        ExplicitWidth = 1276
+        ExplicitHeight = 359
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -378,6 +415,19 @@ object frmCadFilme: TfrmCadFilme
           Font.Style = []
           ParentFont = False
         end
+        object Label10: TLabel
+          Left = 832
+          Top = 6
+          Width = 29
+          Height = 18
+          Caption = 'Foto'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -15
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+        end
         object edtIdFilme: TEdit
           Left = 466
           Top = 67
@@ -386,7 +436,7 @@ object frmCadFilme: TfrmCadFilme
           AutoSelect = False
           AutoSize = False
           BevelOuter = bvNone
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           Enabled = False
           Font.Charset = DEFAULT_CHARSET
@@ -408,7 +458,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -428,7 +478,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -448,7 +498,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -468,7 +518,7 @@ object frmCadFilme: TfrmCadFilme
           Height = 32
           AutoSelect = False
           AutoSize = False
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -487,7 +537,7 @@ object frmCadFilme: TfrmCadFilme
           Top = 232
           Width = 562
           Height = 121
-          Color = 14215400
+          Color = clMedGray
           Ctl3D = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -504,16 +554,41 @@ object frmCadFilme: TfrmCadFilme
           OnKeyDown = edtSinopseKeyDown
           OnKeyPress = edtSinopseKeyPress
         end
+        object pnlImagem: TPanel
+          Left = 832
+          Top = 22
+          Width = 137
+          Height = 203
+          BevelKind = bkSoft
+          BevelOuter = bvNone
+          TabOrder = 6
+          object imgImagem: TImage
+            Left = 0
+            Top = 0
+            Width = 133
+            Height = 199
+            Align = alClient
+            Center = True
+            Proportional = True
+            Stretch = True
+            OnMouseDown = imgImagemMouseDown
+            ExplicitTop = 1
+            ExplicitWidth = 131
+            ExplicitHeight = 213
+          end
+        end
       end
       object Panel6: TPanel
         Left = 0
-        Top = 416
-        Width = 1276
+        Top = 455
+        Width = 1292
         Height = 47
         Align = alBottom
-        Color = 14215400
+        Color = clMedGray
         ParentBackground = False
         TabOrder = 2
+        ExplicitTop = 416
+        ExplicitWidth = 1276
         object btnGravar: TButton
           Left = 519
           Top = 6
@@ -544,8 +619,8 @@ object frmCadFilme: TfrmCadFilme
     Connection = DataModule1.ConexaoDB
     SQL.Strings = (
       'select * from catalogo')
-    Left = 528
-    Top = 16
+    Left = 770
+    Top = 31
     object FDAutoIncField1: TFDAutoIncField
       DisplayLabel = 'Cod. Filme'
       FieldName = 'idFilme'
@@ -579,20 +654,20 @@ object frmCadFilme: TfrmCadFilme
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Arquivos TXT (*.txt)|*.txt'
-    Left = 820
-    Top = 89
+    Left = 589
+    Top = 90
   end
   object QryVerifica: TFDQuery
     Connection = DataModule1.ConexaoDB
     SQL.Strings = (
       'select * from catalogo')
-    Left = 912
-    Top = 248
+    Left = 1096
+    Top = 199
   end
   object SaveDialog1: TSaveDialog
     Filter = 'Arquivo CSV (*.csv)|*.csv'
-    Left = 836
-    Top = 145
+    Left = 679
+    Top = 99
   end
   object QryCatalogo: TFDQuery
     Connection = DataModule1.ConexaoDB
@@ -632,6 +707,24 @@ object frmCadFilme: TfrmCadFilme
       DisplayLabel = 'Ano Lan'#231'amento'
       FieldName = 'anoLancamento'
       Size = 10
+    end
+    object QryCatalogofoto: TBlobField
+      FieldName = 'foto'
+      Origin = 'foto'
+      Size = 2147483647
+    end
+  end
+  object ppmImagem: TPopupMenu
+    TrackButton = tbLeftButton
+    Left = 880
+    Top = 226
+    object CarregarImagem1: TMenuItem
+      Caption = 'Carregar Imagem'
+      OnClick = CarregarImagem1Click
+    end
+    object LimparImagem1: TMenuItem
+      Caption = 'Limpar Imagem'
+      OnClick = LimparImagem1Click
     end
   end
 end

@@ -1,0 +1,183 @@
+unit cCadFilme;
+
+interface
+
+uses System.Classes, Vcl.Controls, Vcl.ExtCtrls, FireDAC.Comp.Client,
+     Vcl.Dialogs, System.SysUtils, uDtmConexao, Vcl.Graphics, Data.DB;
+
+type
+  TFilme = class
+    private
+      ConexaoDB: TFDConnection;
+      F_idFilme: Integer;
+      F_titulo: string;
+      F_diretor: string;
+      F_genero: string;
+      F_sinopse: string;
+      F_anoLancamento: string;
+      F_foto: TMemoryStream;
+    function JaExiste: Boolean;
+
+    public
+      constructor Create(aConexao: TFDConnection);
+      destructor Destroy; override;
+      function Gravar: Boolean;
+      function Atualizar: Boolean;
+      function Seleciona(id: Integer): Boolean;
+      function Apagar: Boolean;
+
+    published
+      property idFilme: Integer read F_idFilme write F_idFilme;
+      property titulo: string read F_titulo write F_titulo;
+      property diretor: string read F_diretor write F_diretor;
+      property genero: string read F_genero write F_genero;
+      property sinopse: string read F_sinopse write F_sinopse;
+      property foto: TMemoryStream read F_foto write F_foto;
+      property anoLancamento: string read F_anoLancamento write F_anoLancamento;
+  end;
+
+implementation
+
+constructor TFilme.Create(aConexao: TFDConnection);
+begin
+  ConexaoDB := aConexao;
+  F_foto := TMemoryStream.Create;
+end;
+
+destructor TFilme.Destroy;
+begin
+  if Assigned(F_foto) then
+    FreeAndNil(F_foto);
+  inherited;
+end;
+
+function TFilme.Gravar: Boolean;
+var
+  QryGravar: TFDQuery;
+begin
+  Result := False;
+  if JaExiste then
+  begin
+    ShowMessage('Filme já cadastrado!');
+    Exit(False);
+  end;
+
+  QryGravar := TFDQuery.Create(nil);
+  try
+    QryGravar.Connection := ConexaoDB;
+    QryGravar.SQL.Text :=
+      'INSERT INTO catalogo (titulo, diretor, genero, sinopse, anoLancamento, foto) ' +
+      'VALUES (:titulo, :diretor, :genero, :sinopse, :anoLancamento, :foto)';
+
+    QryGravar.ParamByName('titulo').AsString := F_titulo;
+    QryGravar.ParamByName('diretor').AsString := F_diretor;
+    QryGravar.ParamByName('genero').AsString := F_genero;
+    QryGravar.ParamByName('sinopse').AsString := F_sinopse;
+    QryGravar.ParamByName('anoLancamento').AsString := F_anoLancamento;
+
+
+    if (F_foto = nil) or (F_foto.Size = 0) then
+    begin
+      QryGravar.ParamByName('foto').DataType := ftBlob;
+      QryGravar.ParamByName('foto').Clear;
+    end
+    else
+    begin
+      F_foto.Position := 0;
+      QryGravar.ParamByName('foto').DataType := ftBlob;
+      QryGravar.ParamByName('foto').LoadFromStream(F_foto, ftBlob);
+    end;
+
+    QryGravar.ExecSQL;
+    Result := True;
+
+  except
+    on E: Exception do
+    begin
+      ShowMessage('Erro ao gravar: ' + E.Message);
+      Result := False;
+    end;
+  end;
+
+  QryGravar.Free;
+end;
+
+function TFilme.Atualizar: Boolean;
+var
+  QryAtualizar: TFDQuery;
+begin
+  try
+    Result := True;
+    QryAtualizar := TFDQuery.Create(nil);
+    QryAtualizar.Connection := ConexaoDB;
+    QryAtualizar.SQL.Text :=
+      'UPDATE catalogo ' +
+      '  SET titulo = :titulo, diretor = :diretor, genero = :genero, ' +
+      '      sinopse = :sinopse, anoLancamento = :anoLancamento, foto = :foto ' +
+      'WHERE idFilme = :idFilme';
+
+    QryAtualizar.ParamByName('idFilme').AsInteger := F_idFilme;
+    QryAtualizar.ParamByName('titulo').AsString := F_titulo;
+    QryAtualizar.ParamByName('diretor').AsString := F_diretor;
+    QryAtualizar.ParamByName('genero').AsString := F_genero;
+    QryAtualizar.ParamByName('sinopse').AsString := F_sinopse;
+    QryAtualizar.ParamByName('anoLancamento').AsString := F_anoLancamento;
+
+    if (F_foto = nil) or (F_foto.Size = 0) then
+    begin
+      QryAtualizar.ParamByName('foto').DataType := ftBlob;
+      QryAtualizar.ParamByName('foto').Clear;
+    end
+    else
+    begin
+      F_foto.Position := 0;
+      QryAtualizar.ParamByName('foto').DataType := ftBlob;
+      QryAtualizar.ParamByName('foto').LoadFromStream(F_foto, ftBlob);
+    end;
+
+    try
+      QryAtualizar.ExecSQL;
+    except
+      Result := False;
+    end;
+  finally
+    if Assigned(QryAtualizar) then
+      FreeAndNil(QryAtualizar);
+  end;
+end;
+
+function TFilme.Seleciona(id: Integer): Boolean;
+var
+  Qry: TFDQuery;
+begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
+  try
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'SELECT idFilme, titulo, diretor, genero, sinopse, anoLancamento, foto ' +
+      'FROM catalogo WHERE idFilme = :idFilme';
+    Qry.ParamByName('idFilme').AsInteger := id;
+    Qry.Open;
+
+    if Qry.IsEmpty then Exit;
+
+    F_idFilme       := Qry.FieldByName('idFilme').AsInteger;
+    F_titulo        := Qry.FieldByName('titulo').AsString;
+    F_diretor       := Qry.FieldByName('diretor').AsString;
+    F_genero        := Qry.FieldByName('genero').AsString;
+    F_sinopse       := Qry.FieldByName('sinopse').AsString;
+    F_anoLancamento := Qry.FieldByName('anoLancamento').AsString;
+
+    F_foto.Clear;
+    if not Qry.FieldByName('foto').IsNull then
+    begin
+      TBlobField(Qry.FieldByName('foto')).SaveToStream(F_foto);
+      F_foto.Position := 0;
+    end;
+
+    Result := True;
+  finally
+    Qry.Free;
+  end;
+end;

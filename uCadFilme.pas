@@ -7,7 +7,8 @@ Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classe
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.ExtCtrls,
   Vcl.StdCtrls, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.Mask,
-  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils, Vcl.Imaging.pngimage;
+  Vcl.ComCtrls, uDTMConexao, cCadFilme, uEnum, PngSpeedButton, PngBitBtn, System.IOUtils, Vcl.Imaging.pngimage, Vcl.Menus,
+  Vcl.Imaging.jpeg, Vcl.ExtDlgs;
 
 type
   TfrmCadFilme = class(TForm)
@@ -65,6 +66,14 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    pnlImagem: TPanel;
+    imgImagem: TImage;
+    Label10: TLabel;
+    ppmImagem: TPopupMenu;
+    CarregarImagem1: TMenuItem;
+    LimparImagem1: TMenuItem;
+    QryCatalogofoto: TBlobField;
+    btnCartaz: TPngBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure btnAlterarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
@@ -89,6 +98,10 @@ type
     procedure edtSinopseKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edtLancamentoExit(Sender: TObject);
     procedure mskEditKeyPress(Sender: TObject; var Key: Char);
+    procedure imgImagemMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure CarregarImagem1Click(Sender: TObject);
+    procedure LimparImagem1Click(Sender: TObject);
+    procedure btnCartazClick(Sender: TObject);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -106,6 +119,8 @@ type
     function Marcador(const Linha: string): Boolean;
     procedure Bloqueiactrl_enter(var Key: Word; Shift: TShiftState);
     function SemEnter(const S: string): string;
+    procedure CarregarImagem(aImage: TImage);
+    procedure LimparImagem(var aImage: TImage);
   public
     { Public declarations }
     IndiceAtual:string;
@@ -119,6 +134,9 @@ var
   frmCadFilme: TfrmCadFilme;
 
 implementation
+
+uses
+  uPagPrincipal;
 {$R *.dfm}
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
@@ -137,8 +155,15 @@ begin
      edtGenero.Text:=oFilme.genero;
      edtSinopse.Text:=oFilme.sinopse;
      edtLancamento.Text:=oFilme.anoLancamento;
-  end
-  else begin
+     if oFilme.foto.Size > 0 then
+      begin
+       oFilme.foto.Position := 0;
+        imgImagem.Picture.LoadFromStream(oFilme.foto);
+     end
+     else
+      imgImagem.Picture.Assign(nil);
+     end
+      else begin
     btnCancelar.Click;
     Abort;
   end;
@@ -168,6 +193,15 @@ procedure TfrmCadFilme.btnCancelarClick(Sender: TObject);
 begin
  ControlarIndiceTab(PageControl1, 0);
  btnPesquisar.Click;
+end;
+
+procedure TfrmCadFilme.btnCartazClick(Sender: TObject);
+begin
+ if not Assigned(frmPagPrincipal) then
+    frmPagPrincipal := TfrmPagPrincipal.Create(Application);
+
+  frmPagPrincipal.Show;
+  Self.Hide;
 end;
 
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
@@ -208,36 +242,6 @@ begin
   end;
 end;
 
-procedure TfrmCadFilme.btnGravarClick(Sender: TObject);
-begin
-  CamposObrigatorios;
-  if Length(edtLancamento.Text) < 4 then begin
-        ShowMessage('Precisa inserir um ano válido ' + sLineBreak + 'Exemplo: 2026');
-        Abort;
-  end;
-  if edtIdFilme.Text <> '' then
-    oFilme.idFilme := StrToInt(edtIdFilme.Text)
-  else
-    oFilme.idFilme := 0;
-
-  oFilme.titulo := Trim(edtTitulo.Text);
-  oFilme.diretor := Trim(edtDiretor.Text);
-  oFilme.genero := Trim(edtGenero.Text);
-  oFilme.sinopse := Trim(edtSinopse.Text);
-  oFilme.anoLancamento := Trim(edtLancamento.Text);
-
-  if FEstadoDoCadastro = ecInserir then
-    oFilme.Gravar
-  else if FEstadoDoCadastro = ecAlterar then
-    oFilme.Atualizar;
-
-  QryCatalogo.Close;
-  QryCatalogo.Open;
-
-  ControlarIndiceTab(PageControl1, 0);
-
-  btnPesquisar.Click;
-end;
 
 procedure TfrmCadFilme.btnImportarClick(Sender: TObject);
 var
@@ -474,6 +478,39 @@ begin
   end;
 end;
 
+procedure TfrmCadFilme.btnGravarClick(Sender: TObject);
+begin
+  CamposObrigatorios;
+  if Length(edtLancamento.Text) < 4 then begin
+        ShowMessage('Precisa inserir um ano válido ' + sLineBreak + 'Exemplo: 2026');
+        Abort;
+  end;
+  if edtIdFilme.Text <> '' then
+    oFilme.idFilme := StrToInt(edtIdFilme.Text)
+  else
+    oFilme.idFilme := 0;
+
+  oFilme.titulo        := Trim(edtTitulo.Text);
+  oFilme.diretor       := Trim(edtDiretor.Text);
+  oFilme.genero        := Trim(edtGenero.Text);
+  oFilme.sinopse       := Trim(edtSinopse.Text);
+  oFilme.anoLancamento := Trim(edtLancamento.Text);
+
+
+  if FEstadoDoCadastro = ecInserir then
+    oFilme.Gravar
+  else if FEstadoDoCadastro = ecAlterar then
+    oFilme.Atualizar;
+
+  QryCatalogo.Close;
+  QryCatalogo.Open;
+
+  ControlarIndiceTab(PageControl1, 0);
+
+  btnPesquisar.Click;
+end;
+
+
 function TfrmCadFilme.Gravar(EstadoDoCadastro: TEstadoDoCadastro): Boolean;
 begin
   if edtIdFilme.Text<>EmptyStr then
@@ -486,6 +523,7 @@ begin
   oFilme.genero                  :=edtGenero.Text;
   oFilme.sinopse                 :=edtSinopse.Text;
   oFilme.anoLancamento           :=edtLancamento.Text;
+
 
  if (EstadoDoCadastro = ecInserir) then
   begin
@@ -517,15 +555,15 @@ begin
 
   if gdSelected in State then
   begin
-    grdFilmes.Canvas.Brush.Color := $C8D6C0;      //linhas selecionada
-    grdFilmes.Canvas.Font.Color := clwhite;
+    grdFilmes.Canvas.Brush.Color := RGB(220, 235, 255);      //linhas selecionada
+    grdFilmes.Canvas.Font.Color := clBlack;
   end
   else
   begin
     if (Linha mod 2) = 0 then
       grdFilmes.Canvas.Brush.Color :=   $FAFAF7
     else
-      grdFilmes.Canvas.Brush.Color := $EEF1EA;     //linha de cima
+      grdFilmes.Canvas.Brush.Color := RGB(142, 153, 161);     //linha de cima
 
     grdFilmes.Canvas.Font.Color := clBlack;
   end;
@@ -827,6 +865,17 @@ begin
   end;
 end;
 
+procedure TfrmCadFilme.imgImagemMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  P: TPoint;
+begin
+  if Button = mbLeft then
+  begin
+    P := imgImagem.ClientToScreen(Point(X, Y));
+    ppmImagem.Popup(P.X, P.Y);
+  end;
+end;
+
 function TfrmCadFilme.Marcador(const Linha: string): Boolean;
 var
   L: string;
@@ -840,5 +889,53 @@ begin
 end;
 
 
+procedure TfrmCadFilme.CarregarImagem(aImage: TImage);
+var
+  OpenDlg: TOpenPictureDialog;
+begin
+  OpenDlg := TOpenPictureDialog.Create(nil);
+  try
+    OpenDlg.Title := 'Selecione a Imagem';
+    OpenDlg.Filter := 'Imagens (*.bmp;*.jpg;*.jpeg;*.png)|*.bmp;*.jpg;*.jpeg;*.png';
+
+    if OpenDlg.Execute then
+    begin
+      try
+        // Carrega na tela para exibir
+        aImage.Picture.LoadFromFile(OpenDlg.FileName);
+
+        // Carrega os bytes brutos do arquivo no stream do objeto
+        oFilme.foto.Clear;
+        oFilme.foto.LoadFromFile(OpenDlg.FileName);
+        oFilme.foto.Position := 0;
+      except
+        on E: Exception do
+          ShowMessage('Erro ao carregar imagem: ' + E.Message);
+      end;
+    end;
+  finally
+    OpenDlg.Free;
+  end;
+end;
+
+
+
+procedure TfrmCadFilme.CarregarImagem1Click(Sender: TObject);
+begin
+ CarregarImagem(imgImagem);
+end;
+
+procedure TfrmCadFilme.LimparImagem(var aImage: TImage);
+begin
+   aImage.Picture.Assign(nil);
+   oFilme.foto.Clear;
+end;
+
+
+
+procedure TfrmCadFilme.LimparImagem1Click(Sender: TObject);
+begin
+ LimparImagem(imgImagem);
+end;
 
 end.

@@ -1,8 +1,8 @@
-unit cCadFilme;
+﻿unit cCadFilme;
 
 interface
 
-uses System.Classes, Vcl.Controls, Vcl.ExtCtrls, FireDAC.Comp.Client, Vcl.Dialogs, System.SysUtils, uDtmConexao;
+uses System.Classes, Vcl.Controls, Vcl.ExtCtrls, FireDAC.Comp.Client, Vcl.Dialogs, System.SysUtils, uDtmConexao, Vcl.Graphics, Data.DB;
 
 type
   TFilme = class
@@ -14,6 +14,7 @@ type
       F_genero: string;
       F_sinopse: string;
       F_anoLancamento: string;
+      F_foto: TMemoryStream;
     function JaExiste: Boolean;
 
 
@@ -31,6 +32,7 @@ type
     property diretor:string read F_diretor write F_diretor;
     property genero:string read F_genero write F_genero;
     property sinopse:string read F_sinopse write F_sinopse;
+    property foto :TMemoryStream  read F_foto write F_foto;
     property anoLancamento:string read F_anoLancamento write F_anoLancamento;
 
   end;
@@ -42,12 +44,15 @@ implementation
 constructor TFilme.Create(aConexao: TFDConnection);
 begin
   ConexaoDB:=aConexao;
+  F_foto := TMemoryStream.Create;
 end;
 
 destructor TFilme.Destroy;
 begin
-
+ if Assigned(F_foto) then
+    FreeAndNil(F_foto);
   inherited;
+
 end;
 
 {$ENDREGION}
@@ -58,7 +63,7 @@ function TFilme.Apagar: Boolean;
 var QryApagar:TFDQuery;
 begin
   if MessageDlg('Apagar o Registro: '+#13+#13+
-                'C�digo: '+IntToStr(F_idFilme)+#13+
+                'Código: '+IntToStr(F_idFilme)+#13+
                 'Nome do Filme: '+F_titulo,mtConfirmation,[mbYes, mbNo],0)<>mrYes then begin
                   Result:=False;
                   Abort;
@@ -85,40 +90,48 @@ begin
 end;
 
 function TFilme.Atualizar: Boolean;
-var QryAtualizar:TFDQuery;
+var
+  QryAtualizar: TFDQuery;
 begin
-try
-    Result:=True;
-    QryAtualizar:=TFDQuery.Create(nil);
-    QryAtualizar.Connection:=ConexaoDB;
-    QryAtualizar.SQL.Clear;
-    QryAtualizar.SQL.Add(
-      'UPDATE catalogo '+
-      '  SET titulo               =:titulo '+
-      '      ,diretor          =:diretor '+
-      '      ,genero          =:genero '+
-      '      ,sinopse             =:sinopse '+
-      '      ,anoLancamento               =:anoLancamento '+
-      'WHERE idFilme=:idFilme ');
+  try
+    Result := True;
+    QryAtualizar := TFDQuery.Create(nil);
+    QryAtualizar.Connection := ConexaoDB;
+    QryAtualizar.SQL.Text :=
+      'UPDATE catalogo ' +
+      '  SET titulo = :titulo, diretor = :diretor, genero = :genero, ' +
+      '      sinopse = :sinopse, anoLancamento = :anoLancamento, foto = :foto ' +
+      'WHERE idFilme = :idFilme';
 
+    QryAtualizar.ParamByName('idFilme').AsInteger := F_idFilme;
+    QryAtualizar.ParamByName('titulo').AsString := F_titulo;
+    QryAtualizar.ParamByName('diretor').AsString := F_diretor;
+    QryAtualizar.ParamByName('genero').AsString := F_genero;
+    QryAtualizar.ParamByName('sinopse').AsString := F_sinopse;
+    QryAtualizar.ParamByName('anoLancamento').AsString := F_anoLancamento;
 
-    QryAtualizar.ParamByName('idFilme').AsInteger:=Self.F_idFilme;
-    QryAtualizar.ParamByName('titulo').AsString:=Self.F_titulo;
-    QryAtualizar.ParamByName('diretor').AsString:=Self.F_diretor;
-    QryAtualizar.ParamByName('genero').AsString:=Self.F_genero;
-    QryAtualizar.ParamByName('sinopse').AsString:=Self.F_sinopse;
-    QryAtualizar.ParamByName('anoLancamento').AsString:=Self.F_anoLancamento;
+    // ← MUDOU: usa o stream diretamente
+    if (F_foto = nil) or (F_foto.Size = 0) then
+    begin
+      QryAtualizar.ParamByName('foto').DataType := ftBlob;
+      QryAtualizar.ParamByName('foto').Clear;
+    end
+    else
+    begin
+      F_foto.Position := 0;
+      QryAtualizar.ParamByName('foto').DataType := ftBlob;
+      QryAtualizar.ParamByName('foto').LoadFromStream(F_foto, ftBlob);
+    end;
 
     try
       QryAtualizar.ExecSQL;
     except
-    Result:=False;
+      Result := False;
     end;
-
-finally
-  if Assigned(QryAtualizar) then
+  finally
+    if Assigned(QryAtualizar) then
       FreeAndNil(QryAtualizar);
-end;
+  end;
 end;
 
 
@@ -129,17 +142,16 @@ begin
   Result := False;
   if JaExiste then
   begin
-    ShowMessage('Filme j� cadastrado!');
+    ShowMessage('Filme já cadastrado!');
     Exit(False);
   end;
 
   QryGravar := TFDQuery.Create(nil);
   try
     QryGravar.Connection := ConexaoDB;
-
     QryGravar.SQL.Text :=
-      'INSERT INTO catalogo (titulo, diretor, genero, sinopse, anoLancamento) ' +
-      'VALUES (:titulo, :diretor, :genero, :sinopse, :anoLancamento)';
+      'INSERT INTO catalogo (titulo, diretor, genero, sinopse, anoLancamento, foto) ' +
+      'VALUES (:titulo, :diretor, :genero, :sinopse, :anoLancamento, :foto)';
 
     QryGravar.ParamByName('titulo').AsString := F_titulo;
     QryGravar.ParamByName('diretor').AsString := F_diretor;
@@ -147,8 +159,19 @@ begin
     QryGravar.ParamByName('sinopse').AsString := F_sinopse;
     QryGravar.ParamByName('anoLancamento').AsString := F_anoLancamento;
 
-    QryGravar.ExecSQL;
+    if (F_foto = nil) or (F_foto.Size = 0) then
+    begin
+      QryGravar.ParamByName('foto').DataType := ftBlob;
+      QryGravar.ParamByName('foto').Clear;
+    end
+    else
+    begin
+      F_foto.Position := 0;
+      QryGravar.ParamByName('foto').DataType := ftBlob;
+      QryGravar.ParamByName('foto').LoadFromStream(F_foto, ftBlob);
+    end;
 
+    QryGravar.ExecSQL;
     Result := True;
 
   except
@@ -163,37 +186,38 @@ begin
 end;
 
 function TFilme.Seleciona(id: Integer): Boolean;
-var QrySeleciona:TFDQuery;
+var
+  Qry: TFDQuery;
 begin
+  Result := False;
+  Qry := TFDQuery.Create(nil);
   try
-    F_idFilme := id;
-    Result:=True;
-    QrySeleciona:=TFDQuery.Create(nil);
-    QrySeleciona.Connection:=ConexaoDB;
-    QrySeleciona.SQL.Clear;
-    QrySeleciona.SQL.Add(
-      'SELECT idFilme, titulo, diretor, genero, sinopse, anoLancamento '+
-      'FROM catalogo '+
-      'WHERE idFilme = :idFilme'
-      );
-    QrySeleciona.ParamByName('idFilme').Value:=F_idFilme;
-    try
-      QrySeleciona.Open;
+    Qry.Connection := ConexaoDB;
+    Qry.SQL.Text :=
+      'SELECT idFilme, titulo, diretor, genero, sinopse, anoLancamento, foto ' +
+      'FROM catalogo WHERE idFilme = :idFilme';
+    Qry.ParamByName('idFilme').AsInteger := id;
+    Qry.Open;
 
-      Self.F_idFilme := QrySeleciona.FieldByName('idFilme').AsInteger;
-      Self.F_titulo := QrySeleciona.FieldByName('titulo').AsString;
-      Self.F_diretor := QrySeleciona.FieldByName('diretor').AsString;
-      Self.F_genero := QrySeleciona.FieldByName('genero').AsString;
-      Self.F_sinopse := QrySeleciona.FieldByName('sinopse').AsString;
-      Self.F_anoLancamento := QrySeleciona.FieldByName('anoLancamento').AsString;
+    if Qry.IsEmpty then Exit;
 
-    except
-    Result:=false;
+    F_idFilme       := Qry.FieldByName('idFilme').AsInteger;
+    F_titulo        := Qry.FieldByName('titulo').AsString;
+    F_diretor       := Qry.FieldByName('diretor').AsString;
+    F_genero        := Qry.FieldByName('genero').AsString;
+    F_sinopse       := Qry.FieldByName('sinopse').AsString;
+    F_anoLancamento := Qry.FieldByName('anoLancamento').AsString;
+
+    F_foto.Clear;
+    if not Qry.FieldByName('foto').IsNull then
+    begin
+      TBlobField(Qry.FieldByName('foto')).SaveToStream(F_foto);
+      F_foto.Position := 0;
     end;
 
+    Result := True;
   finally
-     if Assigned(QrySeleciona) then
-        FreeAndNil(QrySeleciona);
+    Qry.Free;
   end;
 end;
 

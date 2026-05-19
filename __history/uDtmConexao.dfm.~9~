@@ -1,0 +1,16 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 246
+  Width = 468
+  object ConexaoDB: TFDConnection
+    Params.Strings = (
+      'User_Name=sa'
+      'Database=filmes'
+      'Password=domtec@10'
+      'Server=DC-TR-04-VM\SERVERCURSO'
+      'DriverID=MSSQL')
+    Left = 240
+    Top = 88
+  end
+end
