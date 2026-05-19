@@ -5,7 +5,12 @@ object DataModule1: TDataModule1
   Width = 468
   object ConexaoDB: TFDConnection
     Params.Strings = (
+      'User_Name=sa'
+      'Database=filmes'
+      'Password=domtec@10'
+      'Server=DC-TR-04-VM\SERVERCURSO'
       'DriverID=MSSQL')
+    Connected = True
     Left = 240
     Top = 88
   end

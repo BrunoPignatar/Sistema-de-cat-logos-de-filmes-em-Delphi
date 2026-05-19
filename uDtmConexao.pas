@@ -100,6 +100,7 @@ begin
 	 ' genero varchar(50),         '      +
    ' sinopse varchar(500),       '      +
 	 ' anoLancamento varchar(10),   '      +
+   ' foto varbinary(max) null, ' +
 	 ' constraint pk_filme primary key (titulo, diretor) )');
 end;
 
