@@ -5,6 +5,7 @@ object DataModule1: TDataModule1
   Width = 468
   object ConexaoDB: TFDConnection
     Params.Strings = (
+      'User_Name=sa'
       'DriverID=MSSQL')
     Left = 240
     Top = 88

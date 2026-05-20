@@ -58,6 +58,7 @@ uses
 procedure TfrmBoasVindas.FormCreate(Sender: TObject);
 begin
   uDtmConexao.DataModule1.CriarBanco;
+  uDtmConexao.DataModule1.CriarTabela;
   // Configurações da janela
   Self.BorderStyle := bsNone;
   Self.WindowState := wsMaximized;

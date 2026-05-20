@@ -24,6 +24,7 @@ type
     shpLinhaDireita: TShape;
     tmrAnimar: TTimer;
     tmrPulsar: TTimer;
+    btnFechar: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnAcessarClick(Sender: TObject);
@@ -33,6 +34,7 @@ type
     procedure btnAcessarMouseEnter(Sender: TObject);
     procedure btnAcessarMouseLeave(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnFecharClick(Sender: TObject);
   private
     FAlpha: Byte;
     FPulsarUp: Boolean;
@@ -51,10 +53,11 @@ implementation
 {$R *.dfm}
 
 uses
-  uCadFilme;
+  uCadFilme, uDtmConexao, uPagPrincipal;
 
 procedure TfrmBoasVindas.FormCreate(Sender: TObject);
 begin
+  uDtmConexao.DataModule1.CriarBanco;
   // Configurações da janela
   Self.BorderStyle := bsNone;
   Self.WindowState := wsMaximized;
@@ -97,7 +100,7 @@ begin
   lblTrack.Font.Size := 52;
   lblTrack.Font.Style := [fsBold];
   lblTrack.Font.Color := $002035D0; // vermelho BGR
-  lblTrack.Caption := 'TRA ';
+  lblTrack.Caption := 'SHOW';
   lblTrack.Top := 80;
   lblTrack.AutoSize := True;
   lblTrack.Transparent := True;
@@ -139,7 +142,7 @@ begin
   lblIconeFilme.Font.Name := 'Segoe UI';
   lblIconeFilme.Font.Size := 36;
   lblIconeFilme.Font.Color := $002035D0;
-  lblIconeFilme.Caption := '🎬';
+  lblIconeFilme.Caption := '';
   lblIconeFilme.Left := 380;
   lblIconeFilme.Top := 100;
   lblIconeFilme.AutoSize := True;
@@ -308,6 +311,12 @@ begin
   btnAcessar.Font.Color := clWhite;
 end;
 
+
+procedure TfrmBoasVindas.btnFecharClick(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
 procedure TfrmBoasVindas.btnAcessarClick(Sender: TObject);
 begin
   AbrirCadastro;
@@ -318,10 +327,10 @@ begin
   tmrAnimar.Enabled := False;
   tmrPulsar.Enabled := False;
 
-  if not Assigned(frmCadFilme) then
-    frmCadFilme := TfrmCadFilme.Create(Application);
+  if not Assigned(frmPagPrincipal) then
+    frmPagPrincipal := TfrmPagPrincipal.Create(Application);
 
-  frmCadFilme.Show;
+  frmPagPrincipal.Show;
   Self.Hide;
 end;
 

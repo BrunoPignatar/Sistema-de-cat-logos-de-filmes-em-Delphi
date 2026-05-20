@@ -650,7 +650,6 @@ procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
   QryCatalogo.Active := True;
-  uDtmConexao.DataModule1.CriarTabela;
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';

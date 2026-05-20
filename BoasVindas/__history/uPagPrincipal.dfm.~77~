@@ -2303,9 +2303,9 @@ object frmPagPrincipal: TfrmPagPrincipal
       object lblData1: TLabel
         Left = 157
         Top = 208
-        Width = 8
+        Width = 40
         Height = 15
-        Caption = 'X'
+        Caption = 'data1'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWhite
         Font.Height = -21
@@ -2379,7 +2379,7 @@ object frmPagPrincipal: TfrmPagPrincipal
         Height = 30
         Alignment = taLeftJustify
         BevelOuter = bvNone
-        Caption = 'Gen'#234'ro'
+        Caption = 'genero'
         Enabled = False
         Font.Charset = ANSI_CHARSET
         Font.Color = clRed
@@ -2423,7 +2423,7 @@ object frmPagPrincipal: TfrmPagPrincipal
       Font.Name = 'Fixedsys'
       Font.Style = []
       Lines.Strings = (
-        'Sinopse')
+        'lblSinopse1')
       ParentFont = False
       ReadOnly = True
       TabOrder = 3
@@ -2460,7 +2460,7 @@ object frmPagPrincipal: TfrmPagPrincipal
       Font.Name = 'Fixedsys'
       Font.Style = []
       Lines.Strings = (
-        'Titulo')
+        'lblSinopse1')
       ParentFont = False
       ReadOnly = True
       TabOrder = 6
@@ -2492,9 +2492,9 @@ object frmPagPrincipal: TfrmPagPrincipal
     object lblData2: TLabel
       Left = 158
       Top = 208
-      Width = 8
+      Width = 40
       Height = 15
-      Caption = 'x'
+      Caption = 'data2'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
       Font.Height = -21
@@ -2544,7 +2544,7 @@ object frmPagPrincipal: TfrmPagPrincipal
       Height = 16
       Alignment = taLeftJustify
       BevelOuter = bvNone
-      Caption = 'Gen'#234'ro'
+      Caption = 'genero'
       Enabled = False
       Font.Charset = ANSI_CHARSET
       Font.Color = clRed
@@ -2568,7 +2568,7 @@ object frmPagPrincipal: TfrmPagPrincipal
       Font.Name = 'Fixedsys'
       Font.Style = []
       Lines.Strings = (
-        'Sinopse')
+        'lblSinopse1')
       ParentFont = False
       ReadOnly = True
       TabOrder = 4
@@ -2612,7 +2612,7 @@ object frmPagPrincipal: TfrmPagPrincipal
     Font.Name = 'Fixedsys'
     Font.Style = []
     Lines.Strings = (
-      'Titulo')
+      'lblSinopse1')
     ParentFont = False
     ReadOnly = True
     TabOrder = 2
