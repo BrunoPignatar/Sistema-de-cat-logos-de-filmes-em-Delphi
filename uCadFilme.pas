@@ -634,15 +634,14 @@ end;
 
 
 procedure TfrmCadFilme.mskEditKeyPress(Sender: TObject; var Key: Char);
-var i: Integer;
 begin
   if IndiceAtual = 'idFilme' then
   begin
-  if not TryStrToInt(mskEdit.Text, I) then
-  begin
-    ShowMessage('Esse campo de pesquisa não aceita letras!!');
-    Abort;
-  end;
+    if not (Key in ['0'..'9', #8]) then
+    begin
+      ShowMessage('Esse campo de pesquisa não aceita letras!!');
+      Key := #0;
+    end;
   end;
 end;
 

@@ -25,12 +25,8 @@ object frmCadFilme: TfrmCadFilme
     ActivePage = pgcPrincipal
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1284
-    ExplicitHeight = 491
     object pgcPrincipal: TTabSheet
       Caption = 'Consulta'
-      ExplicitWidth = 1276
-      ExplicitHeight = 463
       object Panel1: TPanel
         Left = 0
         Top = 455
@@ -41,8 +37,6 @@ object frmCadFilme: TfrmCadFilme
         Color = clMedGray
         ParentBackground = False
         TabOrder = 1
-        ExplicitTop = 416
-        ExplicitWidth = 1276
         object btnNovo: TButton
           Left = 508
           Top = 7
@@ -91,7 +85,6 @@ object frmCadFilme: TfrmCadFilme
         Color = clMedGray
         ParentBackground = False
         TabOrder = 0
-        ExplicitWidth = 1276
         object lblIndice: TLabel
           Left = 9
           Top = 3
@@ -189,8 +182,6 @@ object frmCadFilme: TfrmCadFilme
         Height = 406
         Align = alClient
         TabOrder = 2
-        ExplicitWidth = 1276
-        ExplicitHeight = 367
         object grdFilmes: TDBGrid
           Left = 1
           Top = 1
@@ -265,8 +256,6 @@ object frmCadFilme: TfrmCadFilme
     object pgcCadastro: TTabSheet
       Caption = 'Cadastro'
       ImageIndex = 1
-      ExplicitWidth = 1276
-      ExplicitHeight = 463
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -283,7 +272,6 @@ object frmCadFilme: TfrmCadFilme
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 1276
         object Label9: TLabel
           Left = 714
           Top = 4
@@ -307,10 +295,6 @@ object frmCadFilme: TfrmCadFilme
         Color = clMedGray
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = -3
-        ExplicitTop = 63
-        ExplicitWidth = 1276
-        ExplicitHeight = 359
         object Label1: TLabel
           Left = 466
           Top = 52
@@ -587,8 +571,6 @@ object frmCadFilme: TfrmCadFilme
         Color = clMedGray
         ParentBackground = False
         TabOrder = 2
-        ExplicitTop = 416
-        ExplicitWidth = 1276
         object btnGravar: TButton
           Left = 519
           Top = 6
