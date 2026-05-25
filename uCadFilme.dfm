@@ -161,7 +161,6 @@ object frmCadFilme: TfrmCadFilme
           Top = 18
           Width = 100
           Height = 28
-          Hint = 'Importar Arquivos TXT'
           Caption = 'Ver Cartaz'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText

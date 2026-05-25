@@ -73,6 +73,7 @@ type
     CarregarImagem1: TMenuItem;
     LimparImagem1: TMenuItem;
     QryCatalogofoto: TBlobField;
+    btnCartaz: TPngBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure btnAlterarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
@@ -100,6 +101,7 @@ type
     procedure imgImagemMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure CarregarImagem1Click(Sender: TObject);
     procedure LimparImagem1Click(Sender: TObject);
+    procedure btnCartazClick(Sender: TObject);
   private
     { Private declarations }
     SelectOriginal:string;
@@ -132,6 +134,9 @@ var
   frmCadFilme: TfrmCadFilme;
 
 implementation
+
+uses
+  uPagPrincipal;
 {$R *.dfm}
 
 procedure TfrmCadFilme.btnAlterarClick(Sender: TObject);
@@ -188,6 +193,15 @@ procedure TfrmCadFilme.btnCancelarClick(Sender: TObject);
 begin
  ControlarIndiceTab(PageControl1, 0);
  btnPesquisar.Click;
+end;
+
+procedure TfrmCadFilme.btnCartazClick(Sender: TObject);
+begin
+ if not Assigned(frmPagPrincipal) then
+    frmPagPrincipal := TfrmPagPrincipal.Create(Application);
+
+  frmPagPrincipal.Show;
+  Self.Hide;
 end;
 
 procedure TfrmCadFilme.btnExportarCSVClick(Sender: TObject);
@@ -482,7 +496,6 @@ begin
   oFilme.sinopse       := Trim(edtSinopse.Text);
   oFilme.anoLancamento := Trim(edtLancamento.Text);
 
-  oFilme.foto.Clear;
 
   if FEstadoDoCadastro = ecInserir then
     oFilme.Gravar
@@ -511,11 +524,6 @@ begin
   oFilme.sinopse                 :=edtSinopse.Text;
   oFilme.anoLancamento           :=edtLancamento.Text;
 
-
-     if imgImagem.Picture.Bitmap.Empty then
-      oFilme.foto.Assign(nil)
-  else
-      oFilme.foto.Assign(imgImagem.Picture);
 
  if (EstadoDoCadastro = ecInserir) then
   begin
@@ -547,15 +555,15 @@ begin
 
   if gdSelected in State then
   begin
-    grdFilmes.Canvas.Brush.Color := $C8D6C0;      //linhas selecionada
-    grdFilmes.Canvas.Font.Color := clwhite;
+    grdFilmes.Canvas.Brush.Color := RGB(220, 235, 255);      //linhas selecionada
+    grdFilmes.Canvas.Font.Color := clBlack;
   end
   else
   begin
     if (Linha mod 2) = 0 then
       grdFilmes.Canvas.Brush.Color :=   $FAFAF7
     else
-      grdFilmes.Canvas.Brush.Color := $EEF1EA;     //linha de cima
+      grdFilmes.Canvas.Brush.Color := RGB(142, 153, 161);     //linha de cima
 
     grdFilmes.Canvas.Font.Color := clBlack;
   end;
@@ -589,6 +597,7 @@ begin
   edtGenero.Text:='';
   edtSinopse.Text:='';
   edtLancamento.Text:='';
+  LimparImagem();
 end;
 
 
@@ -626,15 +635,14 @@ end;
 
 
 procedure TfrmCadFilme.mskEditKeyPress(Sender: TObject; var Key: Char);
-var i: Integer;
 begin
   if IndiceAtual = 'idFilme' then
   begin
-  if not TryStrToInt(mskEdit.Text, I) then
-  begin
-    ShowMessage('Esse campo de pesquisa não aceita letras!!');
-    Abort;
-  end;
+    if not (Key in ['0'..'9', #8]) then
+    begin
+      ShowMessage('Esse campo de pesquisa não aceita letras!!');
+      Key := #0;
+    end;
   end;
 end;
 
@@ -642,7 +650,6 @@ procedure TfrmCadFilme.FormCreate(Sender: TObject);
 var i: Integer;
 begin
   QryCatalogo.Active := True;
-  uDtmConexao.DataModule1.CriarTabela;
   oFilme:=TFilme.create(DataModule1.ConexaoDB);
   lblIndice.Caption:='Cod. Filme';
   IndiceAtual:='idFilme';
@@ -920,6 +927,7 @@ end;
 procedure TfrmCadFilme.LimparImagem(var aImage: TImage);
 begin
    aImage.Picture.Assign(nil);
+   oFilme.foto.Clear;
 end;
 
 

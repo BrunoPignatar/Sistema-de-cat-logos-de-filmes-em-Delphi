@@ -597,6 +597,7 @@ begin
   edtGenero.Text:='';
   edtSinopse.Text:='';
   edtLancamento.Text:='';
+  LimparImagem(imgImagem);
 end;
 
 
